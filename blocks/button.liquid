@@ -1,0 +1,468 @@
+
+{% render 'button', link: block.settings.link, block: block %}
+
+{% schema %}
+{
+  "name": "t:names.button",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "通用"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:settings.label",
+      "default": "<p>请输入内容</p>"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "t:settings.font",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "t:options.heading"
+        },
+        {
+          "value": "var(--font-accent--family)",
+          "label": "t:options.accent"
+        }
+      ],
+      "default": "var(--font-body--family)"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "0.5rem",
+          "label": "8px"
+        },
+        {
+          "value": "0.5625rem",
+          "label": "9px"
+        },
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        },
+        {
+          "value": "1.25rem",
+          "label": "20px"
+        },
+        {
+          "value": "1.375rem",
+          "label": "22px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "24px"
+        },
+        {
+          "value": "1.625rem",
+          "label": "26px"
+        },
+        {
+          "value": "1.75rem",
+          "label": "28px"
+        },
+        {
+          "value": "1.875rem",
+          "label": "30px"
+        },
+        {
+          "value": "2rem",
+          "label": "32px"
+        },
+        {
+          "value": "2.125rem",
+          "label": "34px"
+        },
+        {
+          "value": "2.25rem",
+          "label": "36px"
+        },
+        {
+          "value": "2.375rem",
+          "label": "38px"
+        },
+        {
+          "value": "2.5rem",
+          "label": "40px"
+        },
+        {
+          "value": "2.625rem",
+          "label": "42px"
+        },
+        {
+          "value": "2.75rem",
+          "label": "44px"
+        },
+        {
+          "value": "2.875rem",
+          "label": "46px"
+        },
+        {
+          "value": "3rem",
+          "label": "48px"
+        },
+        {
+          "value": "3.125rem",
+          "label": "50px"
+        },
+        {
+          "value": "3.5rem",
+          "label": "56px"
+        },
+        {
+          "value": "3.75rem",
+          "label": "60px"
+        },
+        {
+          "value": "4rem",
+          "label": "64px"
+        },
+        {
+          "value": "4.5rem",
+          "label": "72px"
+        },
+        {
+          "value": "5.5rem",
+          "label": "88px"
+        },
+        {
+          "value": "7.5rem",
+          "label": "120px"
+        },
+        {
+          "value": "9.5rem",
+          "label": "152px"
+        },
+        {
+          "value": "11.5rem",
+          "label": "184px"
+        }
+      ],
+      "default": "1rem",
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "center",
+    },
+    {
+      "type": "header",
+      "content": "设计"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit"
+        },
+        {
+          "value": "100%",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "pixel",
+          "label": "定制"
+        },
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "text",
+      "id": "width_px",
+      "label": "像素(px)",
+      "default": "1",
+      "visible_if": "{{ block.settings.width == 'pixel' }}"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit"
+        },
+        {
+          "value": "100%",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "pixel",
+          "label": "定制"
+        },
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "text",
+      "id": "height_px",
+      "label": "像素(px)",
+      "default": "1",
+      "visible_if": "{{ block.settings.height == 'pixel' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "字体颜色",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "背景颜色",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "t:settings.border",
+      "options": [
+        {
+          "value": "solid",
+          "label": "实线"
+        },
+        {
+          "value": "dashed",
+          "label": "虚线"
+        },
+        {
+          "value": "dotted",
+          "label": "点线"
+        },
+        {
+          "value": "none",
+          "label": "无"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "边框宽度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "边框颜色",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "悬停颜色"
+    },
+    {
+      "type": "color",
+      "id": "hover_text_color",
+      "label": "字体颜色",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "hover_background_color",
+      "label": "背景颜色",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "hover_border_color",
+      "label": "边框颜色",
+      "alpha": true,
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "t:content.margin"
+    },
+    {
+      "type": "range",
+      "id": "margin-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "特殊"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fit-content",
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+  ],
+  "presets": [
+    {
+      "name": "t:names.button",
+      "category": "t:categories.basic",
+      "settings": {
+        "link": "shopify://collections/all"
+      }
+    }
+  ]
+}
+{% endschema %}

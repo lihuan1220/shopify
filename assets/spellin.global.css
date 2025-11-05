@@ -1,0 +1,16 @@
+/* 图片模块配置 */
+.mobile_image {
+    display: none;
+}
+.pc_image {
+    display: block;
+}
+
+@media(max-width: 750px) {
+    .mobile_image {
+        display: block;
+    }
+    .pc_image {
+        display: none;
+    }
+}

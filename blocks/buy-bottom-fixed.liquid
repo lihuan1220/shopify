@@ -1,0 +1,161 @@
+{%- doc -%}
+    This snippet is used to render a product card.
+    It is used in the product block,featured product block, and the product card block.
+    @param {product} product_resource - The product to render
+    @param {boolean} [show_unit_price] - Whether to show the unit price
+{%- enddoc -%}
+ 
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const buyBottomFixed = document.getElementById('buy-bottom-fixed');
+        
+
+        // 设置触发距离（单位：px）
+        const triggerHeight = 1200;
+
+        function toggleStickyButton() {
+            if (window.scrollY > triggerHeight) {
+                buyBottomFixed.classList.add('fixedShow');
+            } else {
+                buyBottomFixed.classList.remove('fixedShow');
+            }
+        }
+
+        // 监听滚动
+        window.addEventListener('scroll', toggleStickyButton);
+        // 页面加载时检查一次
+        toggleStickyButton();
+    });
+</script>
+{%- liquid
+    
+    assign show_unit_price = show_unit_price | default: false
+    assign show_sale_price_first = true
+    assign selected_variant = product_resource.selected_or_first_available_variant
+    assign price = selected_variant.price
+    assign compare_at_price = selected_variant.compare_at_price
+    assign show_compare_price = false
+
+    if compare_at_price > price
+        assign show_compare_price = true
+    endif
+
+    if product_resource == blank and request.design_mode
+        assign price = 1999
+    endif
+
+    
+    # Checks if product handle matches the closest product's handle (i.e. product page)
+    # and if the currency code is enabled for product pages
+    if product.handle == closest.product.handle and settings.currency_code_enabled_product_pages
+        assign price = price | money_with_currency
+        assign compare_at_price = compare_at_price | money_with_currency
+
+        # Checks if product handle does not match the closest product's handle (i.e. product card)
+        # and if the currency code is enabled for product cards
+    elsif product.handle != closest.product.handle and settings.currency_code_enabled_product_cards
+        assign price = price | money_with_currency
+        assign compare_at_price = compare_at_price | money_with_currency
+
+    else
+        assign price = price | money
+        assign compare_at_price = compare_at_price | money
+    endif
+-%}
+
+<div class="buy-bottom-fixed" id='buy-bottom-fixed'>
+    <div class="left">
+        <p>
+            <span class="price">{{- price | default: '&nbsp;' -}}</span>
+            {% if show_sale_price_first == true and show_compare_price %}
+                <span class="compare-at-price">{{- compare_at_price | default: '&nbsp;' -}}</span>
+            {% endif %}
+        </p>
+        <span class="desc">Orders are typically shipped out within 1~2 business days.</span>
+        
+    </div>
+    <div class="right">
+        {% content_for 'block',
+            type: 'buy-buttons',
+            id: 'buy-buttons'
+          %}
+    </div>
+</div>
+
+{% stylesheet %}
+    .buy-bottom-fixed {
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        width: 100vw;
+        padding: 10px 20px;
+        background-color: #fff;
+        box-shadow: 0 0 24px -12px #ccc;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: 
+            opacity 0.3s ease-out,
+            transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 慢出快入 */
+            pointer-events: none;
+    }
+    #buy-bottom-fixed.fixedShow {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .buy-bottom-fixed .left p {
+        margin-bottom: 10px;
+    }
+    .buy-bottom-fixed .left .desc {
+        font-size: 13px;
+    }
+    .buy-bottom-fixed .price {
+        font-size: 20px;
+        color: #a42325;
+        font-weight: bold;
+    }
+    .compare-at-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 16px;
+    }
+    @media (max-width: 750px) {
+        .buy-bottom-fixed {
+            flex-direction: column;
+            align-items: unset;
+        }
+        .buy-bottom-fixed .left {
+            margin-bottom: 10px;
+        }
+        .buy-bottom-fixed .left p  {
+            margin-bottom: 2px;
+        }
+        .buy-bottom-fixed .left .desc {
+            font-size: 12px;
+        }
+    }
+{% endstylesheet %}
+{% schema %}
+{
+  "name": "底部悬停添加购物车",
+  "tag": null,
+  "settings": [],
+  "presets": [
+    {
+      "name": "buy-bottom-fixed",
+      "category": "t:categories.product",
+      "blocks": {
+        "buy-buttons": {
+          "type": "buy-buttons",
+          "static": true
+        }
+      }
+    }
+  ]
+}
+{% endschema %}

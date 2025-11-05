@@ -1,0 +1,72 @@
+{%- doc -%}
+  Intended for use in a block similar to the button block.
+
+  @param {string} link - link to render
+  @param {object} [block] - The block
+
+  @example
+  {% render 'button', link: '/collections/all' %}
+{%- enddoc -%}
+
+{% capture style_attributes %}
+    {% render 'size-style', settings: block.settings %} {% render 'spacing-padding', settings: block.settings %} {% render 'spacing-margin', settings: block.settings %};
+    font-size: {{ block.settings.font_size }};
+    text-align: {{ block.settings.alignment }};
+    border-radius: {{block.settings.border_radius }}px;
+    border-width: {{ block.settings.border_width }}px;
+    border-style: {{ block.settings.border_style }};
+    --text_color: {{block.settings.text_color }};
+    --background_color: {{block.settings.background_color }};
+    --border_color: {{block.settings.border_color }};
+    --hover_text_color: {{block.settings.hover_text_color }};
+    --hover_background_color: {{block.settings.hover_background_color }};
+    --hover_border_color: {{block.settings.hover_border_color }};
+{% endcapture %}
+
+<a
+  {% if link == blank %}
+    role="link"
+    aria-disabled="true"
+  {% else %}
+    href="{{ link }}"
+  {% endif %}
+  class="
+    button-custom
+    spacing-style
+    size-style
+    {{ block.settings.style_class }}
+    {{ block.settings.style_class }}--{{ block.id }}
+  "
+  style="{{ style_attributes }}"
+
+  {%- if block.settings.open_in_new_tab -%}
+    target="_blank"
+    rel="noopener noreferrer"
+  {%- endif -%}
+  {{ block.shopify_attributes }}
+>
+  {{ block.settings.text }}
+</a>
+
+{% stylesheet %}
+  .link {
+    text-decoration: none;
+    text-decoration-color: currentcolor;
+
+    &:hover {
+      color: var(--color-primary-hover);
+      text-decoration-color: transparent;
+    }
+  }
+  .button-custom {
+    color: var(--text_color);
+    background-color: var(--background_color);
+    border-color: var(--border_color);
+  }
+
+  .button-custom:hover {
+    color: var(--hover_text_color);
+    background-color: var(--hover_background_color);
+    border-color: var(--hover_border_color);
+  }
+{% endstylesheet %}
