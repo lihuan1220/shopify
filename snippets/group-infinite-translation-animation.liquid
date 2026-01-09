@@ -1,0 +1,67 @@
+<script>
+    (function() {
+        'use strict';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化所有带有infinite_translation_animation类的容器
+            document.querySelectorAll('.infinite_translation_animation').forEach(initScroll);
+        });
+
+        function initScroll(container) {
+            const speed = parseInt(container.dataset.speed) || 300;
+            const hoverPause = true;
+            
+            let scrollPosition = 0;
+            let itemWidth = 0;
+            let animationId;
+            
+            // 获取第一个项目的宽度
+            function getItemWidth() {
+                return container.firstElementChild?.offsetWidth || 0;
+            }
+            
+            // 更新项目宽度
+            itemWidth = getItemWidth();
+            
+            // 鼠标悬停暂停
+            if (hoverPause) {
+                container.addEventListener('mouseenter', () => {
+                    cancelAnimationFrame(animationId);
+                });
+                
+                container.addEventListener('mouseleave', animate);
+            }
+            
+            // 动画函数
+            function animate() {
+                const deltaTime = 16; // 假设60fps
+                const scrollSpeed = itemWidth / speed;
+                const distance = scrollSpeed * (deltaTime / 1000) * 60; // 调整为实际速度
+                
+                scrollPosition += distance;
+                
+                // 当第一个项目完全移出屏幕时，移动到末尾
+                if (scrollPosition >= itemWidth) {
+                    const firstItem = container.firstElementChild;
+                    if (firstItem) {
+                        container.appendChild(firstItem);
+                        scrollPosition = 0;
+                    }
+                }
+                
+                container.style.transform = `translateX(-${scrollPosition}px)`;
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            // 开始动画
+            animate();
+            
+            // 窗口大小变化时重新计算
+            window.addEventListener('resize', () => {
+                setTimeout(() => {
+                    itemWidth = getItemWidth();
+                }, 100);
+            });
+        }
+})();
+</script>

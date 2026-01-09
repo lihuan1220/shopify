@@ -24,16 +24,34 @@
     {% if settings.custom_mobile_size %} mobile-border-radius {% endif %}
     {% if settings.device_hide %} device-hide {% endif %}
     {% if settings.mobile_device_hide %} mobile-device-hide {% endif %}
+     {% comment %} 阴影 {% endcomment %}
+    {% if settings.box_shadow %} box-shadow-style {% endif %}
+     {% comment %} 鼠标移入透明 {% endcomment %}
+    {% if settings.is_mouse_hover_opacity %} mouse-hover-opacity {% endif %}
+     {% comment %} 组动画 {% endcomment %}
+    {% if settings.group_animation_type != 'none' %} {{ settings.group_animation_type }} {% endif %}
   "
   style="
     {% render 'border-override', settings: settings %}
     {% render 'spacing-style', settings: settings %}
     {% render 'size-style', settings: settings %}
+    {% render 'position-style', settings: settings %}
     {{ style }}
-    {% if settings.custom_mobile_size %} --mobile-border-radius: {{ settings.modile_border_radius }}px {% endif %}
+    {% if settings.custom_mobile_size %} --mobile-border-radius: {{ settings.modile_border_radius }}px; {% endif %}
+    {% comment %} 滑动功能设置 {% endcomment %}
+    {% if settings.is_scroll and settings.is_scroll_pagination %} padding-bottom: 20px; {% endif %}
+    {% if settings.width == 'pixel' %} width: {{ settings.width_px }}px; min-width: {{ settings.width_px }}px; {% endif %}
+    {% comment %} 动画设置 {% endcomment %}
+    {% if settings.group_animation_type != 'none' %}
+      --animation-duration: {{ settings.group_animation_duration }}s;
+      --animation-delay: {{ settings.group_animation_delay }}s;
+    {% endif %}
+    {% comment %} 无限平移动画 {% endcomment %}
+    {% if settings.infinite_translation_animation %} overflow: hidden; {% endif %}
   "
   {{ shopify_attributes }}
   data-testid="group-block"
+  {% if settings.group_animation_type != 'none' %} data-group-animation {% endif %}
 >
   {%- if settings.link != blank -%}
     <a
@@ -58,32 +76,64 @@
     {% endif %}
   </div>
 
-    <div
-      class="
-        group-block-content
-        {% if request.design_mode %}group-block-content--design-mode{% endif %}
-        layout-panel-flex
-        layout-panel-flex--{{ settings.content_direction | default: 'column' }}
-        {% if settings.vertical_on_mobile %} mobile-column{% endif %}
-        {% if settings.custom_mobile_size and settings.mobile_layout_reversal %}
-          {% if settings.content_direction == 'column' or settings.content_direction == 'row' and settings.vertical_on_mobile %}
-            mobile-column-reverse
-          {% else %}
-            mobile-row-reverse
-          {% endif %}
+  <div
+    class="
+      group-block-content
+      {% if request.design_mode %}group-block-content--design-mode{% endif %}
+      layout-panel-flex
+      layout-panel-flex--{{ settings.content_direction | default: 'column' }}
+      {% if settings.vertical_on_mobile %} mobile-column{% endif %}
+      {% if settings.custom_mobile_size and settings.mobile_layout_reversal %}
+        {% if settings.content_direction == 'column' or settings.content_direction == 'row' and settings.vertical_on_mobile %}
+          mobile-column-reverse
+        {% else %}
+          mobile-row-reverse
         {% endif %}
-        {% if settings.custom_mobile_size %} mobile-gap {% endif %}
-        {% if settings.vertical_on_mobile and settings.custom_mobile_size%} mobile-horizontal-alignment {% endif %}
-      "
+      {% endif %}
+      {% if settings.custom_mobile_size %} mobile-gap {% endif %}
+      {% if settings.vertical_on_mobile and settings.custom_mobile_size%} mobile-horizontal-alignment {% endif %}
+      {% comment %} 滑动功能设置 {% endcomment %}
+      {% if settings.is_scroll %} scroll-content 
+        {% comment %} 分页 {% endcomment %}
+        {% if settings.is_scroll_pagination %} scroll-content-pagination {% endif %}
+      {% endif %}
+      {% comment %} 无限平移动画 {% endcomment %}
+      {% if settings.infinite_translation_animation %} infinite_translation_animation {% endif %}
+    "
+    style="
+      {% render 'layout-panel-style', settings: settings %}
+      {% if settings.custom_mobile_size %} --mobile-gap: {{ settings.mobile_gap }}px; {% endif %}
+      {% if settings.vertical_on_mobile and settings.custom_mobile_size %} --mobile-horizontal-alignment: {{ settings.mobile_horizontal_alignment_flex_direction_column }}; {% endif %}
+    "
+  >
+    {{- children -}}
+  </div>
+  {%- if settings.is_scroll and settings.is_scroll_pagination -%}
+    <div class="scroll-pagination-dots" 
+      data-pagination-for="{{ shopify_attributes | split: 'data-block-id="' | last | split: '"' | first }}"
       style="
-        {% render 'layout-panel-style', settings: settings %}
-        {% if settings.custom_mobile_size %} --mobile-gap: {{ settings.mobile_gap }}px; {% endif %}
-        {% if settings.vertical_on_mobile and settings.custom_mobile_size %} --mobile-horizontal-alignment: {{ settings.mobile_horizontal_alignment_flex_direction_column }}; {% endif %}
-      "
-    >
-      {{- children -}}
+        padding-top: {{ settings.pagination_padding_top }}px;
+        justify-content: {{ settings.pagination_alignment }};
+        --dot-color: {{ settings.pagination_dot_color }};
+        --dot-active-color: {{ settings.pagination_dot_active_color }};
+        --dot-width: {{ settings.pagination_dot_width }}px;
+        --dot-height: {{ settings.pagination_dot_height }}px;
+        --dot-gap: {{ settings.pagination_dot_gap }}px;
+        --dot-radius: {{ settings.pagination_dot_radius }}px;
+      ">
     </div>
+  {%- endif -%}
 </div>
+
+{%- comment %} 👇 引入分页点 JS 逻辑 {% endcomment -%}
+{%- if settings.is_scroll and settings.is_scroll_pagination -%}
+  {% render 'group-scroll-pagination' %}
+{%- endif -%}
+
+{% comment %} 无限平移动画 {% endcomment %}
+{%- if settings.infinite_translation_animation -%}
+  {% render 'group-infinite-translation-animation' %}
+{%- endif -%}
 
 {% stylesheet %}
   .group-block__link {
@@ -105,6 +155,76 @@
   /* Needs the .group-block__link ~ to be specific enough to take effect. */
   .group-block__link ~ .group-block-content--design-mode {
     pointer-events: auto;
+  }
+
+  /* 滑动 */
+  .scroll-content {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scroll-content-pagination {
+    scroll-snap-type: x mandatory;
+    -ms-overflow-style: none;  /* IE 和 Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+
+  .scroll-content-pagination::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+
+  /* 或者将滚动条宽度设为0 */
+  .scroll-content-pagination::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+
+  .scroll-content-pagination > .group-block {
+    flex-shrink: 0;
+    min-width: 100%;
+    scroll-snap-align: start;
+  }
+
+  /*  新增：分页点样式（短横线）*/
+  .scroll-pagination-dots {
+    display: flex;
+    gap: var(--dot-gap);
+    justify-content: center; /* 默认居中 */
+  }
+
+  .scroll-pagination-dot {
+    width: var(--dot-width);
+    height: var(--dot-height);
+    background-color: var(--dot-color);
+    border-radius: var(--dot-radius);
+    pointer-events: auto;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+
+  .scroll-pagination-dot.active {
+    background-color: var(--dot-active-color);
+  }
+
+  .scroll-pagination-dot:not(.active):hover,
+  .scroll-pagination-dot:not(.active):focus {
+    background-color: var(--dot-active-color);
+  }
+
+  .box-shadow-style {
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1); 
+  }
+  .box-shadow-style:hover {
+    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, .1); 
+  }
+
+  .mouse-hover-opacity {
+    transition: opacity 0.2s linear;
+  }
+  .mouse-hover-opacity:hover {
+    opacity: 0.7;
   }
   
   /* PC */

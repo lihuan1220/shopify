@@ -27,37 +27,43 @@
 
     </header>
 
-    {%- content_for 'block', id: 'blog-post-image', type: 'image' %}
-    {%- content_for 'block', id: 'blog-post-content', type: '_blog-post-content' %}
+    <div class="blog-post-main-container">
+      {%- content_for 'block', id: 'blog-post-navigation', type: '_blog-post-navigation' %}
+      <div>
+        {%- content_for 'block', id: 'blog-post-image', type: 'image' %}
+        {%- content_for 'block', id: 'blog-post-content', type: '_blog-post-content' %}
 
-    {% if blog.comments_enabled? %}
-      <div class="blog-post-comments-container">
-        <h2 class="h3">{{- 'blogs.article.comments_heading' | t: count: article.comments_count -}}</h2>
+        {% if blog.comments_enabled? %}
+          <div class="blog-post-comments-container">
+            <h2 class="h3">{{- 'blogs.article.comments_heading' | t: count: article.comments_count -}}</h2>
 
-        <div class="blog-post-comments">
-          {% paginate article.comments by 10 %}
-            {% for comment in article.comments %}
-              <div class="blog-post-comment">
-                {{ comment.content }}
-                <div class="blog-post-comment__author">
-                  <span class="blog-post-comment__author-name">{{- comment.author -}}</span>
-                  <span>{{- 'blogs.article.comment_author_separator' | t -}}</span>
-                  <span class="blog-post-comment__date">
-                    {{- comment.created_at | time_tag: format: 'date' -}}
-                  </span>
+            <div class="blog-post-comments">
+              {% paginate article.comments by 10 %}
+                {% for comment in article.comments %}
+                  <div class="blog-post-comment">
+                    {{ comment.content }}
+                    <div class="blog-post-comment__author">
+                      <span class="blog-post-comment__author-name">{{- comment.author -}}</span>
+                      <span>{{- 'blogs.article.comment_author_separator' | t -}}</span>
+                      <span class="blog-post-comment__date">
+                        {{- comment.created_at | time_tag: format: 'date' -}}
+                      </span>
+                    </div>
+                  </div>
+                {% endfor %}
+
+                <div class="blog-post-comments-pagination">
+                  {{- paginate | default_pagination -}}
                 </div>
-              </div>
-            {% endfor %}
-
-            <div class="blog-post-comments-pagination">
-              {{- paginate | default_pagination -}}
+              {% endpaginate %}
             </div>
-          {% endpaginate %}
-        </div>
 
-        {% render 'blog-comment-form', article: article, section_id: section.id %}
+            {% render 'blog-comment-form', article: article, section_id: section.id %}
+          </div>
+        {% endif %}
       </div>
-    {% endif %}
+      {%- content_for 'block', id: 'blog-post-related', type: '_blog-post-related' %}
+    </div>
   </div>
 </div>
 
@@ -66,10 +72,17 @@
 </script>
 
 {% stylesheet %}
+  .blog-post-main-container {
+    display: grid;
+    grid-template-columns: 300px 1fr 300px;
+    gap: 20px;
+  }
+
   .blog-post-comments-container {
     width: 100%;
     max-width: var(--normal-content-width);
     margin: 0 auto;
+    margin-top: 50px;
   }
 
   .blog-post-comments {
@@ -111,6 +124,11 @@
   .blog-post-comments-pagination .current,
   .blog-post-comments-pagination a:hover {
     border-bottom: 1px solid var(--color-foreground);
+  }
+  @media (max-width: 750px) {
+    .blog-post-main-container {
+      display: contents;
+    }
   }
 {% endstylesheet %}
 
@@ -171,7 +189,7 @@
       "step": 1,
       "unit": "px",
       "default": 0
-    }
+    },
   ],
   "presets": []
 }

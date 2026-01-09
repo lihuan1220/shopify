@@ -134,7 +134,7 @@
                       href="{{ item.url }}"
                       class="cart-items__title"
                     >
-                      {{- item.product.title -}}
+                      {{- item.product.title | split: '-' | first | strip -}}
                     </a>
                   </p>
                   {% if item.product.vendor and block.settings.vendor %}

@@ -1,0 +1,168 @@
+{% assign content = article.content %}
+{% stylesheet %}
+  .h2-nav-floating {
+    position: sticky;
+    top: 70px;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .h2-nav-floating:hover {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+  }
+  
+  .h2-nav-floating h4 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .h2-nav-floating ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 20px;
+  }
+  
+  .h2-nav-floating li {
+    display: -webkit-box; /* 必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 */
+    -webkit-box-orient: vertical; /* 必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 */
+    -webkit-line-clamp: 2; /* 限制在一个块元素显示的文本的行数，这里是2行 */
+    overflow: hidden; /* 隐藏溢出内容 */
+    text-overflow: ellipsis; /* 溢出部分显示省略号 */
+  }
+  
+  .h2-nav-floating a {
+    display: block;
+    color: #000000;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .h2-nav-floating a:hover {
+    color: #47B92D;
+  }
+  
+  .h2-nav-floating a.active {
+    color: #47B92D !important;
+  }
+{% endstylesheet %}
+
+{% if content contains '<h2' %}
+  <nav class="h2-nav-floating" id="h2Nav">
+    <h4>Table of contents</h4>
+    <ul>
+      {% assign h2_parts = content | split: '<h2' %}
+      {% for h2_part in h2_parts offset: 1 %}
+        {% assign h2_tag = h2_part | split: '</h2>' | first %}
+        {% assign h2_id = h2_tag | split: 'id="' | last | split: '"' | first %}
+        {% assign h2_text = h2_tag | split: '>' | last %}
+        
+        {% if h2_text != blank %}
+          <li>
+            <a href="#{{ h2_id }}" data-target="{{ h2_id }}">
+              {{ h2_text }}
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}
+
+
+{% javascript %}
+   const h2Targets = [];
+
+    // 将 blogContent 相关逻辑移出全局作用域或使其更健壮
+    let blogContent = null;
+
+    // 在 DOMContentLoaded 事件内部重新获取元素，确保它们存在
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取博客内容容器
+        blogContent = document.querySelector('.blog-post-content'); // 或者使用更具体的选择器，如 document.querySelector('#shopify-block-ARlpHNnAybEdQSndBS__blog-post-content .blog-post-content')
+
+        // 收集所有导航链接和目标元素
+        document.querySelectorAll('[data-target]').forEach(link => {
+            const targetId = link.getAttribute('data-target');
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                h2Targets.push({
+                    link: link,
+                    element: targetElement,
+                    offsetTop: targetElement.offsetTop // 这个值依赖于元素渲染完成
+                });
+            }
+        });
+
+        // 初始化：检查一次当前激活项
+        updateActiveLink();
+
+        // 将事件监听器添加到 DOMContentLoaded 内部，确保元素已就位
+        window.addEventListener('scroll', updateActiveLink);
+        window.addEventListener('resize', updateActiveLink);
+    });
+
+    function updateActiveLink() {
+
+        // 始终尝试更新活动链接，如果 h2Targets 存在的话
+        if (h2Targets.length === 0) return;
+
+        const scrollPosition = window.scrollY + 100; // 使用 window.pageYOffset 或 window.scrollY
+        let activeTarget = null;
+
+        // 找到当前视口顶部最接近的 h2 目标
+        for (let i = h2Targets.length - 1; i >= 0; i--) {
+            if (scrollPosition >= h2Targets[i].offsetTop) {
+                activeTarget = h2Targets[i];
+                break;
+            }
+        }
+
+        // 移除所有链接的 'active' 类
+        document.querySelectorAll('#h2Nav a').forEach(a => a.classList.remove('active'));
+
+        // 给当前活跃的链接添加 'active' 类
+        if (activeTarget) {
+            activeTarget.link.classList.add('active');
+        }
+    }
+
+
+    // 为目录中的链接添加平滑滚动功能
+    document.querySelectorAll('#h2Nav a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1); // 获取 ID (去掉 #)
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                // 计算滚动位置（可以加上顶部偏移，例如导航栏高度）
+                const targetPosition = targetElement.offsetTop;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "目录",
+  "settings": [],
+  "presets": [
+    {
+      "name": "目录"
+    }
+  ]
+}
+{% endschema %}

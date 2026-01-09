@@ -77,4 +77,8 @@
     -%}
     {% render 'unit-price', price: unit_price, measurement: selected_variant.unit_price_measurement %}
   {%- endif -%}
+
+  {% if settings.discount_image %}
+    <img src="{{ settings.discount_image | img_url: '1920x1920' }}" style="width: 122px;height: auto;position: relative;top: 3px;">
+  {% endif %}
 </div>

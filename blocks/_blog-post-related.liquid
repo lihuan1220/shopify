@@ -1,0 +1,189 @@
+{% assign current_article = article %}
+{% assign all_blog = blog %}
+
+{% stylesheet %}
+  .recent-posts-widget {
+    position: sticky;
+    top: 70px;
+    border-radius: 10px;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 70vh;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+
+  .recent-posts-widget:hover {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+  }
+  
+  .recent-posts-widget h3 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .posts-container {
+    display: grid;
+    gap: 20px;
+  }
+  
+  .post-item:hover .post-title {
+    color: #47B92D;
+  }
+  
+  .post-item:hover .post-image {
+    transform: scale(1.05);
+  }
+  
+  .post-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  
+  .post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .post-content {
+    display: grid;
+    align-content: space-between;
+  }
+  
+  .post-title {
+    font-size: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    color: #000000;
+  }
+  
+  .post-date {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
+  
+  .post-item a {
+    display: flex;
+    gap: 10px;
+  }
+{% endstylesheet %}
+
+<div class="recent-posts-widget">
+  <h3>Related Posts</h3>
+  <div id="recent-posts-container" class="posts-container">
+    {% for article in all_blog.articles %}
+      {% if article.id != current_article.id %}
+        <div class="post-item" 
+             data-article-id="{{ article.id }}" 
+             data-tags='{% for tag in article.tags %}{{ tag }}{% unless forloop.last %},{% endunless %}{% endfor %}'
+             data-title="{{ article.title | escape }}"
+             data-url="{{ article.url }}"
+             data-image="{% if article.image %}{{ article.image | img_url: '150x150' }}{% else %}https://via.placeholder.com/80x80?text=No+Image{% endif %}"
+             data-date="{{ article.published_at | date: '%B %d, %Y' }}">
+          <a href="{{ article.url }}">
+            <div class="post-image">
+              <img src="{{ article.image | img_url: '150x150' }}" alt="{{ article.title }}">
+            </div>
+            <div class="post-content">
+              <h4 class="post-title">{{ article.title }}</h4>
+              <p class="post-date">{{ article.published_at | date: "%B %d, %Y" }}</p>
+            </div>
+          </a>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 当前文章的标签
+    const currentTags = [{% for tag in article.tags %}"{{ tag }}"{% unless forloop.last %}, {% endunless %}{% endfor %}];
+    const allPostItems = document.querySelectorAll('.post-item');
+    const relatedArticles = [];
+    
+    // 检查每篇文章的标签匹配
+    allPostItems.forEach(function(item) {
+      const tags = item.getAttribute('data-tags').split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+      let matchCount = 0;
+      
+      tags.forEach(function(tag) {
+        tag = tag.trim(); // 去除空格
+        if (currentTags.includes(tag)) {
+          matchCount++;
+        }
+      });
+      
+      if (matchCount > 0) {
+        relatedArticles.push({
+          element: item,
+          matchCount: matchCount,
+          title: item.getAttribute('data-title'),
+          url: item.getAttribute('data-url'),
+          image: item.getAttribute('data-image'),
+          date: item.getAttribute('data-date')
+        });
+      }
+    });
+    
+    // 显示前10个匹配的文章
+    const maxRelated = 10;
+    const container = document.getElementById('recent-posts-container');
+    container.innerHTML = '';
+    
+    const displayCount = Math.min(maxRelated, relatedArticles.length);
+    
+    for (let i = 0; i < displayCount; i++) {
+      const article = relatedArticles[i];
+      const postItem = document.createElement('div');
+      postItem.className = 'post-item';
+      postItem.innerHTML = `
+        <a href="${article.url}">
+          <div class="post-image">
+            <img src="${article.image}" alt="${article.title}">
+          </div>
+          <div class="post-content">
+            <h4 class="post-title">${article.title}</h4>
+            <p class="post-date">${article.date}</p>
+          </div>
+        </a>
+      `;
+      container.appendChild(postItem);
+    }
+    
+    // 如果没有相关文章，显示所有文章的前10个（排除当前文章）
+    if (displayCount === 0) {
+      const allArticles = Array.from(allPostItems).slice(0, maxRelated);
+      container.innerHTML = '';
+      
+      allArticles.forEach(function(articleItem) {
+        const clone = articleItem.cloneNode(true);
+        container.appendChild(clone);
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "相关博客",
+  "settings": [],
+  "presets": [
+    {
+      "name": "相关博客"
+    }
+  ]
+}
+{% endschema %}

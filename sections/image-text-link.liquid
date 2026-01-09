@@ -1,0 +1,403 @@
+{%- comment -%}
+  Section: Feature Slider with Image and Text Sync
+{%- endcomment -%}
+
+<!-- HTML 结构 -->
+<div class="image-text-link-{{ section.id }} section section--page-width 
+    {% if section.settings.device_hide %} device_hide {% endif %}
+    {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}">
+  <div class="feature-slider" style="{% if section.settings.is_reverse %} flex-direction: row-reverse; {% endif %}">
+    <div class="feature-slider-images" style="height: {{ section.settings.height_px }}px;
+      {% if section.settings.background_image %}
+        background-image: url('{{ section.settings.background_image | img_url: "1024x" }}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      {% endif %}">
+      {% for block in section.blocks %}
+        {% if block.type == 'feature-item' %}
+          <div class="image-wrapper">
+            <img src="{{ block.settings.image | img_url: '1024x' }}" alt="{{ block.settings.title }}"
+                 class="{% if section.settings.background_image %}with-bg-image{% endif %}">
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="feature-slider-texts">
+      {% for block in section.blocks %}
+        {% if block.type == 'feature-item' %}
+          <div class="feature-text-item" data-index="{{ forloop.index0 }}">
+            <div class="countdown-progress">
+              <div class="countdown-bar"></div>
+            </div>
+            <p class="title">{{ block.settings.title }}</p>
+            <p class="content">{{ block.settings.content }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .feature-slider {
+    display: flex;
+    gap: 100px;
+    align-items: flex-start;
+    height: 100%;
+  }
+
+  .feature-slider-images {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    border-radius: 20px;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+  }
+
+  .feature-slider-images::-webkit-scrollbar {
+    display: none;
+  }
+
+  .image-wrapper {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px; /* 保持圆角效果 */
+    scroll-snap-align: start;
+  }
+
+  .image-wrapper img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .image-wrapper img.with-bg-image {
+    /* 当有背景图片时，图片居中显示并占满90%空间 */
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    opacity: 0; /* 初始透明度为0 */
+    transform: scale(1.1); /* 初始放大 */
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out; /* 添加过渡效果 */
+  }
+
+  .image-wrapper.visible img.with-bg-image {
+    opacity: 1; /* 可见时透明度为1 */
+    transform: scale(1); /* 回到正常位置 */
+  }
+
+  .feature-slider-texts {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    overflow-y: auto;
+    height: 100%;
+    justify-content: center;
+    position: relative; /* 关键：为 ::before 提供定位上下文 */
+  }
+
+  .feature-text-item {
+    cursor: pointer;
+    color: #999999;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
+    padding-left: 30px;
+    transition: color 1s ease;
+  }
+
+  
+  .countdown-progress {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background-color: #AFE2C6;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .countdown-bar {
+    width: 100%;
+    height: 0%;
+    background: #4caf50;
+    /* transition: height 5s linear; */
+  }
+
+  .feature-text-item.active {
+    color: #000000;
+  }
+
+  .feature-text-item .title {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .feature-text-item .content {
+    font-size: 16px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+  .feature-text-item.active .content {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+{% endstylesheet %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // 使用动态生成的类名来获取slider元素
+    const sectionId = '{{ section.id }}';
+    const slider = document.querySelector('.image-text-link-' + sectionId + ' .feature-slider');
+    if (!slider) return;
+
+    const imageContainer = slider.querySelector('.feature-slider-images');
+    const textItems = Array.from(slider.querySelectorAll('.feature-text-item'));
+    const imageWrappers = Array.from(imageContainer.querySelectorAll('.image-wrapper'));
+    const images = Array.from(imageContainer.querySelectorAll('img'));
+    // 获取动画时间设置（进度条时间，单位为秒）
+    const countdownDuration = parseFloat('{{ section.settings.interval | default: "3" }}') * 1000;
+
+    if (imageWrappers.length !== textItems.length) {
+      console.warn('Images and text items count do not match!');
+      return;
+    }
+
+    let currentIndex = 0;
+    let currentCountdownTimeout = null;
+
+    // 初始化时显示第一个图片
+    if (imageWrappers.length > 0) {
+      imageWrappers[0].classList.add('visible');
+    }
+
+    function clearCurrentCountdown() {
+      if (currentCountdownTimeout) {
+        clearTimeout(currentCountdownTimeout);
+        currentCountdownTimeout = null;
+      }
+    }
+
+    function resetCountdownHeight() {
+      // 重置所有进度条
+      textItems.forEach(item => {
+        const bar = item.querySelector('.countdown-bar');
+        if (bar) {
+          bar.style.transition = 'none';
+          bar.style.height = '0%';
+          void bar.offsetWidth; // 强制重绘
+          bar.style.transition = `height ${countdownDuration}ms linear`;
+        }
+      });
+    }
+
+    function resetCountdown(index) {
+      clearCurrentCountdown();
+
+      resetCountdownHeight();
+
+      // 为当前项启动倒计时
+      const currentBar = textItems[index].querySelector('.countdown-bar');
+      if (currentBar) {
+        currentBar.style.height = '100%';
+
+        // 设置倒计时结束后的回调
+        currentCountdownTimeout = setTimeout(() => {
+          autoNext();
+        }, countdownDuration);
+      }
+    }
+
+    function autoNext() {
+      // 计算下一个索引
+      currentIndex = (currentIndex + 1) % textItems.length;
+      
+      // 更新UI
+      updateActiveState(currentIndex);
+      scrollToImage(currentIndex);
+      
+      // 重置高度
+      resetCountdownHeight()
+    }
+
+    function scrollToImage(index) {
+      const targetWrapper = imageWrappers[index];
+
+      imageContainer.scrollTo({
+        top: targetWrapper.offsetTop - imageContainer.offsetTop,
+        behavior: 'smooth',
+      });
+
+      // 滚动完成后添加可见类
+      setTimeout(() => {
+        imageWrappers.forEach(wrapper => wrapper.classList.remove('visible'));
+        targetWrapper.classList.add('visible');
+      }, 300);
+    }
+
+    function updateActiveState(index) {
+      textItems.forEach((item) => item.classList.remove('active'));
+      textItems[index].classList.add('active');
+    }
+
+    // 为每个文字项添加点击事件
+    textItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        // 立即更新到点击的项目
+        currentIndex = index;
+
+        // 滚动到目标图片
+        scrollToImage(index);
+
+        // 更新UI状态
+        updateActiveState(index);
+        
+        // 重置高度
+        resetCountdownHeight()
+      });
+    });
+
+    // 监听图片容器的滚动事件
+    let scrollTimeout;
+    imageContainer.addEventListener('scroll', () => {
+      // 清除之前的定时器
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+      scrollTimeout = setTimeout(() => {
+        const containerTop = imageContainer.scrollTop;
+        const containerHeight = imageContainer.clientHeight;
+        const middlePoint = containerTop + containerHeight / 2;
+
+        let activeIndex = 0;
+        for (let i = 0; i < imageWrappers.length; i++) {
+          const wrapperTop = imageWrappers[i].offsetTop;
+          const wrapperBottom = wrapperTop + imageWrappers[i].offsetHeight;
+
+          if (wrapperTop <= middlePoint && wrapperBottom >= middlePoint) {
+            activeIndex = i;
+            break;
+          }
+        }
+
+        // 更新当前索引
+        currentIndex = activeIndex;
+        
+        // 更新UI状态
+        updateActiveState(activeIndex);
+        
+        // 为当前项启动倒计时
+        resetCountdown(activeIndex);
+
+        // 显示当前可见的图片
+        imageWrappers.forEach(wrapper => wrapper.classList.remove('visible'));
+        imageWrappers[activeIndex].classList.add('visible');
+      }, 150);
+    });
+
+    // 初始化
+    if (textItems.length > 0) {
+      updateActiveState(currentIndex);
+      resetCountdown(currentIndex);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "图文联动",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "背景图片"
+    },
+    {
+      "type": "text",
+      "id": "height_px",
+      "label": "图片高度(px)",
+      "default": "460"
+    },
+    {
+      "type": "text",
+      "id": "interval",
+      "label": "间隔(秒)",
+      "default": "3"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_reverse",
+      "label": "图文反转",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "设备显示"
+    },
+    {
+      "type": "checkbox",
+      "id": "device_hide",
+      "label": "电脑端隐藏",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_device_hide",
+      "label": "移动端隐藏",
+      "default": false
+    },
+  ],
+  "blocks": [
+    {
+      "type": "feature-item",
+      "name": "项",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "图片"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "标题"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "内容"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "图文联动",
+      "category": "自定义"
+    }
+  ]
+}
+{% endschema %}

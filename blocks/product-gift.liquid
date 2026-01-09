@@ -1,0 +1,144 @@
+{%- comment -%}
+  产品赠品模块 - 图片+内容左对齐，价格右对齐
+{%- endcomment -%}
+
+<div class="product-gift">
+  <div class="gift-left">
+    <div class="gift-image">
+      <img src="{{ block.settings.image | img_url: '60x60' }}" alt="{{ block.settings.title }}">
+    </div>
+    <div class="gift-content">
+      <p class="gift-title">{{ block.settings.title }}</p>
+      <p class="gift-description">{{ block.settings.content }}</p>
+    </div>
+  </div>
+
+  <div class="gift-price">
+    <span class="price-discounted">{{ block.settings.discounted_price }}</span>
+    <span class="price-original">{{ block.settings.original_price }}</span>
+  </div>
+</div>
+
+{% stylesheet %}
+  /* 产品赠品模块 - 两端对齐布局 */
+  .product-gift {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 关键：左右两端对齐 */
+    background-color: #F8F8F8;
+    padding: 14px 20px;
+    border-radius: 5px;
+    width: 100%;
+  }
+
+  /* 左侧：图片 + 内容 */
+  .gift-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1; /* 占满剩余空间 */
+  }
+
+  .gift-image img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+  }
+
+  .gift-content {
+    flex: 1;
+  }
+
+  .gift-title {
+    font-size: 16px;
+    color: #000000;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  .gift-description {
+    font-size: 12px;
+    color: #000000;
+    margin: 0;
+  }
+
+  /* 右侧：价格 */
+  .gift-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+  }
+
+  .price-discounted {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+  }
+
+  .price-original {
+    font-size: 12px;
+    text-decoration: line-through;
+    color: #999999;
+  }
+  @media (max-width: 768px) {
+    .product-gift {
+    padding: 10px 10px;
+  }
+  .gift-left {
+    gap: 10px;
+  }
+    .gift-title {
+    font-size: 12px;
+  }
+
+  .gift-description {
+    font-size: 10px;
+  }
+  .price-discounted {
+    font-size: 12px;
+  }
+
+  .price-original {
+    font-size: 10px;
+  }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "产品赠品",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "图片"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "标题"
+    },
+    {
+      "type": "text",
+      "id": "content",
+      "label": "内容"
+    },
+    {
+      "type": "text",
+      "id": "original_price",
+      "label": "原价"
+    },
+    {
+      "type": "text",
+      "id": "discounted_price",
+      "label": "折后价"
+    }
+  ],
+  "presets": [
+    {
+      "name": "产品赠品"
+    }
+  ]
+}
+{% endschema %}

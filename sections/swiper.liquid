@@ -1,0 +1,379 @@
+<div class="custom-swiper-container 
+    spacing-style
+    section section--{{ section.settings.section_width }} 
+    {% if section.settings.no_select %} no-select {% endif %}
+    {% if section.settings.device_hide %} device_hide {% endif %}
+    {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}"
+    style="{% render 'spacing-style', settings: section.settings %}">
+  <div class="swiper custom-Swiper-{{ section.id }} border-style" style="{% render 'border-override', settings: section.settings %}">
+    <div class="swiper-wrapper">
+      {%- for block in section.blocks -%}
+        <div class="swiper-slide">
+          {% render block %}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} 可选：分页器 {%- endcomment -%}
+    {% if section.settings.show_pagination %}
+      <div class="swiper-pagination"></div>
+    {% endif %}
+
+    {%- comment -%} 可选：导航按钮 {%- endcomment -%}
+    {% if section.settings.show_navigation %}
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .custom-swiper-container {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  .custom-swiper-container:hover .swiper-button-next,
+  .custom-swiper-container:hover .swiper-button-prev {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .custom-Swiper-{{ section.id }} {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+
+  .swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 100%;
+  }
+
+  /* Swiper 自带元素的样式 */
+  .swiper-pagination-bullet {
+    background-color: rgba(0, 0, 0, 0.5); /* 分页器点的颜色 */
+  }
+
+  .swiper-pagination-bullet-active {
+    background-color: #47B92D; /* 活跃分页器点的颜色 */
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #000000;
+    background-color: #ffffff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    --swiper-navigation-size: 10px;
+    font-weight: bold;
+    border: 1px solid #ebebeb;
+    opacity: 0;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  }
+
+  .swiper-button-next {
+      transform: translateX(10px); /* 初始向右平移 10px */
+  }
+
+  .swiper-button-prev {
+      transform: translateX(-10px); /* 初始向左平移 10px */
+  }
+  
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    transform: scale(1.02) !important;
+  }
+
+  .swiper-pagination-progressbar {
+    width: 20% !important;
+    top: auto !important;
+    left: auto !important;
+    bottom: 0 !important;
+  }
+
+  .swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
+    background: #47B92D;
+  }
+
+  .no-select {
+    -webkit-user-select: none;  /* Safari */
+    -moz-user-select: none;     /* Firefox */
+    -ms-user-select: none;      /* Internet Explorer/Edge */
+    user-select: none;          /* 标准语法 */
+  }
+
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // 为每个 section 实例创建唯一的 Swiper
+    const swiperContainer = document.querySelector('.custom-Swiper-{{ section.id }}');
+    if (swiperContainer) {
+      {% if section.settings.pagination_type == 'progressbar' %}
+        swiperContainer.style.paddingBottom = '40px';
+      {% endif %}
+      new Swiper(swiperContainer, {
+        // --- Swiper 配置选项 ---
+        direction: 'horizontal', // 滑动方向
+        effect: '{{ section.settings.effect }}', // 切换效果
+        loop: {{ section.settings.loop }}, // 是否循环
+        speed: 800, // 切换动画的持续时间（毫秒）
+
+        // --- 自动播放 ---
+        {% if section.settings.autoplay %}
+        autoplay: {
+          delay: {{ section.settings.autoplay_delay | default: 3000 | times: 1000 }}, // 转换秒为毫秒
+          disableOnInteraction: false, // 用户操作后不停止自动播放
+        },
+        {% endif %}
+
+        // --- 分页器 ---
+        {% if section.settings.show_pagination %}
+        pagination: {
+          el: '.swiper-pagination',
+          type: '{{ section.settings.pagination_type }}',
+          clickable: true, // 点击分页器切换
+        },
+        {% endif %}
+
+        // --- 导航按钮 ---
+        {% if section.settings.show_navigation %}
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        {% endif %}
+
+        // --- 自由模式 ---
+        freeMode: {{ section.settings.freemode }},  // 自由模式
+        {% if section.settings.freemode %}
+          slidesPerView: {{ section.settings.slides_perView }},  // 每页幻灯片
+          spaceBetween: {{ section.settings.space_between }}, // 幻灯片间距
+        {% endif %}
+
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "自定义Swiper",
+  "class": "custom-swiper",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "_divider"
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "effect",
+      "label": "切换效果",
+      "options": [
+        {
+          "value": "slide",
+          "label": "滑动"
+        },
+        {
+          "value": "fade",
+          "label": "淡入淡出"
+        }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "循环",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "自动播放",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_delay",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "秒",
+      "label": "自动播放间隔",
+      "default": 3,
+      "visible_if": "{{ section.settings.autoplay == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "显示分页",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "pagination_type",
+      "label": "分页类型",
+      "options": [
+        {
+          "value": "bullets",
+          "label": "圆点"
+        },
+        {
+          "value": "progressbar",
+          "label": "滚动条"
+        }
+      ],
+      "default": "bullets",
+      "visible_if": "{{ section.settings.show_pagination == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "显示导航按钮 (左右箭头)",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "freemode",
+      "label": "自由模式",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "space_between",
+      "label": "幻灯片间距",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "visible_if": "{{ section.settings.freemode == true }}"
+    },
+    {
+      "type": "range",
+      "id": "slides_perView",
+      "label": "每页幻灯片",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "visible_if": "{{ section.settings.freemode == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "no_select",
+      "label": "内容禁止选择",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "设备显示"
+    },
+    {
+      "type": "checkbox",
+      "id": "device_hide",
+      "label": "电脑端隐藏",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_device_hide",
+      "label": "移动端隐藏",
+      "default": false
+    },
+  ],
+  "presets": [
+    {
+      "name": "Swiper",
+      "category": "自定义"
+    }
+  ]
+}
+{% endschema %}

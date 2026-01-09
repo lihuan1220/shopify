@@ -1,0 +1,167 @@
+{%- comment -%}
+  Section: Button Controlled Image Display
+{%- endcomment -%}
+
+<!-- HTML 结构 -->
+<div class="button-image-display-{{ section.id }} section section--page-width 
+    {% if section.settings.device_hide %} device_hide {% endif %}
+    {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}">
+
+  <!-- 按钮导航区 -->
+  <div class="button-nav-container">
+    {% for block in section.blocks %}
+      {% if block.type == 'image-item' %}
+        <div class="button-wrapper">
+          <button 
+            class="nav-button {% if forloop.first %}active{% endif %}" 
+            data-target="{{ block.id }}">
+            {{ block.settings.title }}
+          </button>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- 内容展示区 -->
+  <div class="content-display-container" style="aspect-ratio: {{ section.settings.image_aspect_ratio }}">
+    {% for block in section.blocks %}
+      {% if block.type == 'image-item' %}
+        <div 
+          id="{{ block.id }}" 
+          class="content-item {% if forloop.first %}active{% endif %}"
+          style="display: {% if forloop.first %}block{% else %}none{% endif %};"
+        >
+            <img 
+              src="{{ block.settings.image | img_url: '3840x' }}" 
+              alt="{{ block.settings.title }}"
+              class="display-image"
+            />
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+
+{% stylesheet %}
+
+  .button-nav-container {
+    display: flex;
+    width: 100%;
+    background-color: #F9F9F9;
+    margin-bottom: 40px;
+    border-radius: 5px;
+  }
+
+  .button-wrapper {
+    flex: 1;
+    text-align: center;
+  }
+
+  .nav-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 24px;
+    border: none;
+    background-color: transparent;
+    text-align: center;
+  }
+
+  .nav-button.active,
+  .nav-button:hover {
+    color: #47B92D;
+  }
+
+  .content-display-container {
+    text-align: center;
+  }
+
+  .display-image {
+    width: 100%;
+    height: auto;
+  }
+
+  @media screen and (max-width: 750px) {
+    .nav-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+    .button-nav-container {
+        margin-bottom: 20px;
+    }
+  }
+
+{% endstylesheet %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sectionId = '{{ section.id }}';
+    const container = document.querySelector('.button-image-display-' + sectionId);
+    if (!container) return;
+
+    const navButtons = container.querySelectorAll('.nav-button');
+    const contentItems = container.querySelectorAll('.content-item');
+
+    navButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.getAttribute('data-target');
+        
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        contentItems.forEach(item => item.style.display = 'none');
+        
+        button.classList.add('active');
+        const targetItem = container.querySelector('#' + targetId);
+        if (targetItem) targetItem.style.display = 'block';
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "按钮控制图片",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "device_hide",
+      "label": "电脑端隐藏",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_device_hide",
+      "label": "移动端隐藏",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "image_aspect_ratio",
+      "label": "图片宽高比"
+    },
+  ],
+  "blocks": [
+    {
+      "type": "image-item",
+      "name": "项",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "按钮"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "图片"
+        },
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "按钮控制图片",
+      "category": "自定义"
+    }
+  ]
+}
+{% endschema %}

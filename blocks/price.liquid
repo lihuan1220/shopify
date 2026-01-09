@@ -76,7 +76,7 @@
   {% endif %}
 
   {%- if selected_variant != blank and block.settings.show_installments -%}
-    <div class="installments">
+    <div class="installments" style="text-wrap: wrap;">
       {%- assign product_form_installment_id = 'product-form-installment-' | append: block.id -%}
       {%- form 'product', product_resource, id: product_form_installment_id, class: 'payment-terms' -%}
         <input
@@ -918,6 +918,15 @@
       "label": "促销价字体颜色",
       "default": "#000000",
       "visible_if": "{{ block.settings.custom_font_color == true }}"
+    },
+    {
+      "type": "header",
+      "content": "折扣"
+    },
+    {
+      "type": "image_picker",
+      "id": "discount_image",
+      "label": "折扣图片"
     },
     {
       "type": "header",

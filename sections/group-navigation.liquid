@@ -1,0 +1,223 @@
+{%- comment -%}
+  组导航 Section
+{%- endcomment -%}
+
+<div class="group-navigation-section" id="group-navigation-sticky">
+  <div class="nav-container">
+    {%- for block in section.blocks -%}
+      <a
+        href="#{{ block.settings.navigation_id }}"
+        class="nav-item {% if forloop.first %}active{% endif %}
+          {% if block.settings.device_hide %} device-hide {% endif %}
+          {% if block.settings.mobile_device_hide %} mobile-device-hide {% endif %}"
+        data-target="{{ block.settings.navigation_id }}"
+      >
+        {{ block.settings.title }}
+      </a>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "分区导航",
+  "class": "group-navigation",
+  "blocks": [
+    {
+      "type": "group-navigation",
+      "name": "项",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "标题"
+        },
+        {
+          "type": "text",
+          "id": "navigation_id",
+          "label": "锚点ID"
+        },
+        {
+          "type": "header",
+          "content": "设备显示"
+        },
+        {
+          "type": "checkbox",
+          "id": "device_hide",
+          "label": "电脑端隐藏",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "mobile_device_hide",
+          "label": "移动端隐藏",
+          "default": false
+        },
+      ]
+    }
+  ],
+  "settings": [],
+  "presets": [
+    {
+      "name": "分区导航",
+      "category": "自定义"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  .group-navigation {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    height: 60px;
+    width: 100%;
+  }
+  .group-navigation-section {
+    height: 100%;
+    width: 100%;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: #f7f7f7b3;
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center;     /* 垂直居中 */
+  }
+  .nav-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-item {
+    font-size: 24px;
+    color: #000000;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  .nav-item:hover,
+  .nav-item.active {
+    color: #47B92D;
+  }
+
+  @media (max-width: 768px) {
+    .nav-item {
+      font-size: 14px;
+      padding: 10px;
+    }
+    .nav-container {
+      gap: 10px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    // 获取所有导航项和目标元素
+    const allNavItems = document.querySelectorAll('.nav-item');
+    const navItems = Array.from(allNavItems).filter(item => {
+      return window.getComputedStyle(item).display !== 'none';
+    });
+
+    const targetElements = new Map();
+    
+    // 创建目标元素映射
+    navItems.forEach(item => {
+      const targetId = item.getAttribute('data-target');
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElements.set(targetId, targetElement);
+      }
+    });
+
+    // 点击导航项事件
+    navItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // 移除所有激活状态
+        navItems.forEach(nav => nav.classList.remove('active'));
+        
+        // 添加当前激活状态
+        this.classList.add('active');
+        
+        // 获取目标ID并滚动到对应元素
+        const targetId = this.getAttribute('data-target');
+        const targetElement = targetElements.get(targetId);
+        
+        if (targetElement) {
+          // 计算滚动位置（考虑固定导航栏高度）
+          const offsetTop = targetElement.getBoundingClientRect().top + window.pageYOffset;
+          const navHeight = document.querySelector('.group-navigation').offsetHeight;
+          
+          // 平滑滚动到目标位置
+          window.scrollTo({
+            top: offsetTop - navHeight,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 监听滚动事件，根据滚动位置更新激活的导航项
+    let ticking = false;
+    
+    function updateActiveNav() {
+      const scrollPosition = window.scrollY + 300; // 添加偏移量以提前触发
+      let activeTarget = null;
+      let lastValidTarget =  null; // 用于存储找到的最后一个有效的、在视口上方的目标
+      
+      // 找到当前应该激活的目标
+      for (let [targetId, element] of targetElements) {
+        const offsetTop = element.offsetParent.offsetTop;
+        const offsetBottom = offsetTop + element.offsetParent.offsetHeight;
+        
+        if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+          activeTarget = targetId;
+          break;
+        }
+        // 如果当前元素的顶部低于滚动位置，说明滚动位置还在当前元素的上方区域
+          // 记录这个元素作为潜在的激活目标（如果后续没有更匹配的）
+          if (offsetTop < scrollPosition) {
+              lastValidTarget = targetId;
+          }
+      }
+
+      // 如果在任何元素范围内都没找到，则使用最后一个在视口上方的元素
+      if (!activeTarget) {
+          activeTarget = lastValidTarget;
+      }
+      if (!activeTarget) {
+          activeTarget = navItems[0].getAttribute('data-target');
+      }
+      
+      // 更新导航项的激活状态
+      navItems.forEach(item => {
+        const targetId = item.getAttribute('data-target');
+        if (targetId === activeTarget) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+      
+      ticking = false;
+    }
+    
+    function requestTick() {
+      if (!ticking) {
+        requestAnimationFrame(updateActiveNav);
+        ticking = true;
+      }
+    }
+    
+    // 监听滚动事件
+    window.addEventListener('scroll', requestTick);
+    
+    // 初始化时更新一次激活状态
+    updateActiveNav();
+  });
+{% endjavascript %}

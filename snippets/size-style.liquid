@@ -4,6 +4,20 @@
      settings: {block.settings || section.settings}
 {%- endcomment -%}
 
+{% comment %} 移动端宽度 {% endcomment %}
+{% if settings.width_mobile == 'custom' %}
+  --size-style-width-mobile:
+  {{- settings.custom_width_mobile }}%; --size-style-width-mobile-min:
+  {{- settings.custom_width_mobile }}%;
+{%- elsif settings.width_mobile == 'fill' -%}
+  --size-style-width-mobile: 100%; --size-style-width-mobile-min: 5rem;
+{%- elsif settings.width_mobile == 'fit-content' -%}
+  --size-style-width-mobile: {{ settings.width_mobile }}; --size-style-width-mobile-min: {{ settings.width_mobile }};
+{%- elsif settings.width == 'pixel' -%}
+  --size-style-width-mobile: {{ settings.width_px }}px;
+{%- endif -%}
+
+{% comment %} pc端宽度 {% endcomment %}
 {%- if settings.width == 'custom' -%}
   --size-style-width:
   {{- settings.custom_width }}%;
@@ -15,6 +29,7 @@
   --size-style-width: {{ settings.width }};
 {%- endif -%}
 
+{% comment %} 高度 {% endcomment %}
 {%- if settings.height == 'custom' -%}
   --size-style-height:
   {{- settings.custom_height }}%;
@@ -24,14 +39,4 @@
   --size-style-height: {{ settings.height_px }}px;
 {%- else -%}
   --size-style-height: {{ settings.height }};
-{%- endif -%}
-
-{% if settings.width_mobile == 'custom' %}
-  --size-style-width-mobile:
-  {{- settings.custom_width_mobile }}%; --size-style-width-mobile-min:
-  {{- settings.custom_width_mobile }}%;
-{%- elsif settings.width_mobile == 'fill' -%}
-  --size-style-width-mobile: 100%; --size-style-width-mobile-min: 5rem;
-{%- elsif settings.width_mobile == 'fit-content' -%}
-  --size-style-width-mobile: {{ settings.width_mobile }}; --size-style-width-mobile-min: {{ settings.width_mobile }};
 {%- endif -%}

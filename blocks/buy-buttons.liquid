@@ -215,8 +215,7 @@
   }
 
   .product-form-buttons {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
     gap: calc(var(--gap-sm) / 2);
 
     @media screen and (min-width: 750px) {
@@ -235,6 +234,7 @@
 
   .quantity-selector {
     flex-grow: 0;
+    width: 140px;
   }
 
   .product-form-buttons button {

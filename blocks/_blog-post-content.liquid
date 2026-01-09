@@ -2,15 +2,168 @@
 
 <div class="blog-post-content rte">
   <rte-formatter>
-    {{ article.content }}
+    {% comment %}
+  ==============================================================================
+  内链自动化代码 (不区分大小写版) - 开始
+  ==============================================================================
+  功能：
+  1. 不区分大小写匹配关键词
+  2. 保持原文的大小写格式
+  3. 每个关键词只替换一次
+  4. 不在H标签（H1-H6）内添加链接
+  5. 不在已有链接的文本内添加
+  6. 不在URL内添加
+  7. 不在HTML标签属性内添加
+{% endcomment %}
+
+{% assign processed_content = article.content %}
+{% assign internal_links = shop.metaobjects.internal_link.values %}
+
+{% if internal_links != blank %}
+  {% assign sorted_links = internal_links | sort: 'priority' | reverse %}
+
+  {% for item in sorted_links %}
+    {% assign keyword = item.keyword %}
+    {% assign url = item.url %}
+
+    {% if keyword != blank and url != blank %}
+
+      {% comment %} 转换为小写进行匹配检查 {% endcomment %}
+      {% assign keyword_lower = keyword | downcase %}
+      {% assign content_lower = processed_content | downcase %}
+
+      {% comment %} 检查是否包含关键词（不区分大小写） {% endcomment %}
+      {% if content_lower contains keyword_lower %}
+
+        {% comment %}
+          找出原文中实际的关键词（保持原始大小写）
+          策略：按小写分割，然后找到对应位置的原文
+        {% endcomment %}
+
+        {% assign parts_lower = content_lower | split: keyword_lower %}
+        {% assign parts_original = processed_content | split: '' %}
+
+        {% comment %} 如果找到了关键词 {% endcomment %}
+        {% if parts_lower.size > 1 %}
+
+          {% comment %} 计算第一次出现的位置 {% endcomment %}
+          {% assign first_part_lower = parts_lower | first %}
+          {% assign position = first_part_lower | size %}
+
+          {% comment %} 提取原文中对应位置的文本（保持大小写）{% endcomment %}
+          {% assign keyword_length = keyword | size %}
+          {% assign original_keyword = '' %}
+
+          {% for i in (1..keyword_length) %}
+            {% assign char_position = position | plus: i | minus: 1 %}
+            {% assign char = parts_original[char_position] %}
+            {% assign original_keyword = original_keyword | append: char %}
+          {% endfor %}
+
+          {% comment %} 使用原始大小写的关键词创建链接 {% endcomment %}
+          {% capture link_html %}<a href="{{ url }}" title="{{ original_keyword }}">{{ original_keyword }}</a>{% endcapture %}
+
+          {% comment %} 检查是否已经添加过该链接 {% endcomment %}
+          {% assign already_linked = false %}
+          {% if processed_content contains link_html %}
+            {% assign already_linked = true %}
+          {% endif %}
+
+          {% comment %} 检查关键词是否在现有的<a>标签内 {% endcomment %}
+          {% capture in_link_check %}>{{ original_keyword }}</a>{% endcapture %}
+          {% if processed_content contains in_link_check %}
+            {% assign already_linked = true %}
+          {% endif %}
+
+          {% unless already_linked %}
+            {% comment %} 安全替换检查 {% endcomment %}
+            {% assign parts = processed_content | split: original_keyword %}
+            {% assign parts_count = parts.size %}
+
+            {% if parts_count > 1 %}
+              {% assign safe_to_replace = false %}
+              {% assign check_part = parts[0] %}
+
+              {% comment %} 检查是否在H标签内 {% endcomment %}
+              {% assign in_heading = false %}
+              {% assign h_tags = '<h1,<h2,<h3,<h4,<h5,<h6' | split: ',' %}
+              {% for h_tag in h_tags %}
+                {% if check_part contains h_tag %}
+                  {% assign after_h_tag = check_part | split: h_tag | last %}
+                  {% unless after_h_tag contains '</h' %}
+                    {% assign in_heading = true %}
+                    {% break %}
+                  {% endunless %}
+                {% endif %}
+              {% endfor %}
+
+              {% comment %} 检查是否在<a>标签内 {% endcomment %}
+              {% assign in_link_tag = false %}
+              {% if check_part contains '<a ' or check_part contains '<a>' %}
+                {% assign last_a_open = check_part | split: '<a' | size %}
+                {% assign last_a_close = check_part | split: '</a>' | size %}
+                {% if last_a_open > last_a_close %}
+                  {% assign in_link_tag = true %}
+                {% endif %}
+              {% endif %}
+
+              {% comment %} 检查是否在href或src等属性内 {% endcomment %}
+              {% assign in_attribute = false %}
+              {% if check_part contains 'href="' or check_part contains "href='" %}
+                {% assign last_href = check_part | split: 'href="' | last | split: 'href=' | last %}
+                {% unless last_href contains '"' or last_href contains "'" %}
+                  {% assign in_attribute = true %}
+                {% endunless %}
+              {% endif %}
+
+              {% comment %} 检查是否在HTML标签的属性中 {% endcomment %}
+              {% assign last_open_bracket = check_part | split: '<' | size %}
+              {% assign last_close_bracket = check_part | split: '>' | size %}
+              {% if last_open_bracket > last_close_bracket %}
+                {% assign in_attribute = true %}
+              {% endif %}
+
+              {% unless in_heading or in_link_tag or in_attribute %}
+                {% assign safe_to_replace = true %}
+              {% endunless %}
+
+              {% if safe_to_replace %}
+                {% assign processed_content = processed_content | replace_first: original_keyword, link_html %}
+              {% endif %}
+            {% endif %}
+          {% endunless %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{{ processed_content }}
+
+{% comment %}
+  ==============================================================================
+  内链自动化代码 (不区分大小写版) - 结束
+  ==============================================================================
+{% endcomment %}
   </rte-formatter>
 </div>
 
 {% stylesheet %}
   .blog-post-content {
-    max-width: 80%;
-    font-size: 18px;
+    max-width: 100%;
+    font-size: 16px;
     margin: 0 auto;
+  }
+  .blog-post-content img {
+    width: unset !important;
+    display: unset !important;
+  }
+  .video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 {% endstylesheet %}
 

@@ -1,0 +1,70 @@
+<script>
+  (function() {
+    'use strict';
+
+    function initPaginationForGroup(groupBlock) {
+      const slider = groupBlock.querySelector('.group-block-content.scroll-content-pagination');
+      const dotsContainer = groupBlock.querySelector('.scroll-pagination-dots');
+      
+      if (!slider || !dotsContainer) return;
+
+      // 子块现在是 .group-block-content 内的直接子元素
+      const childBlocks = slider.querySelectorAll(':scope > .group-block');
+      const pageCount = childBlocks.length;
+
+      if (pageCount <= 1) {
+        dotsContainer.style.display = 'none';
+        return;
+      }
+
+      // 防止重复初始化
+      if (dotsContainer.children.length > 0) return;
+
+      // 生成分页点
+      for (let i = 0; i < pageCount; i++) {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'scroll-pagination-dot';
+        dot.dataset.index = i;
+        dot.addEventListener('click', function() {
+          const scrollLeft = i * slider.offsetWidth;
+          slider.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+        });
+        dotsContainer.appendChild(dot);
+      }
+
+      const dots = dotsContainer.querySelectorAll('.scroll-pagination-dot');
+
+      const updateActiveDot = () => {
+        const scrollLeft = slider.scrollLeft;
+        const pageWidth = slider.offsetWidth;
+        const currentIndex = Math.round(scrollLeft / pageWidth);
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentIndex);
+        });
+      };
+
+      updateActiveDot();
+      slider.addEventListener('scroll', updateActiveDot);
+    }
+
+    function initAll() {
+      // 现在查找有滑动设置的 group-block，然后在其内部查找 .group-block-content
+      document.querySelectorAll('.group-block').forEach(function(groupBlock) {
+        // 检查这个 group-block 是否有滑动分页功能
+        if (groupBlock.querySelector('.group-block-content.scroll-content-pagination')) {
+          initPaginationForGroup(groupBlock);
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+      initAll();
+    }
+
+    // 支持 Shopify 主题编辑器动态加载
+    document.addEventListener('shopify:section:load', initAll);
+  })();
+</script>

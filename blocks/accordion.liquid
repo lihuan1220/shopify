@@ -3,12 +3,15 @@
 <div
   class="accordion accordion--{{ block.id }} accordion--{{ block.settings.icon }} border-style spacing-style{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}{% if block.settings.dividers %} accordion--dividers{% endif %}"
   style="
-    --summary-font-family: var(--font-{{ block.settings.type_preset }}--family);
-     --summary-font-style: var(--font-{{ block.settings.type_preset }}--style);
-     --summary-font-weight: var(--font-{{ block.settings.type_preset }}--weight);
-     --summary-font-size: var(--font-{{ block.settings.type_preset }}--size);
-     --summary-font-line-height: var(--font-{{ block.settings.type_preset }}--line-height);
-     --summary-font-case: var(--font-{{ block.settings.type_preset }}--case);
+    --summary-font-family: {{ block.settings.font }};
+     --summary-font-weight: {% if block.settings.is_bold %} bolder {% else %} normal {% endif %};
+     --summary-font-size: {{ block.settings.font_size }};
+     --summary-mobile-font-size: {{ block.settings.mobile_font_size }};
+     --summary-font-line-height: {{ block.settings.line_height }};
+     --summary-font-case: {{ block.settings.case }};
+     --summary-font-wrap: {{ block.settings.wrap }};
+     --details-pc-padding-top-bottom: {{ block.settings.pc_padding_top_bottom }}px;
+     --details-mobile-padding-top-bottom: {{ block.settings.mobile_padding_top_bottom }}px;
     {% render 'spacing-style', settings: block.settings %}
     {% render 'border-override', settings: block.settings %}
   "
@@ -23,21 +26,31 @@
     width: 100%;
   }
   @container style(--border-width: 0) or style(--border-style: none) {
-    .accordion--dividers:not([class*='color-']) accordion-custom:first-child .details {
+    /* 去掉头尾分割线 */
+    /* .accordion--dividers:not([class*='color-']) accordion-custom:first-child .details {
       border-block-start: var(--style-border-width) solid var(--color-border);
     }
 
     .accordion--dividers:not([class*='color-']) accordion-custom:last-child .details {
       border-block-end: var(--style-border-width) solid var(--color-border);
-    }
+    } */
+  }
+
+  .accordion--dividers .details {
+    padding: var(--details-pc-padding-top-bottom) 0;
   }
 
   .accordion--dividers accordion-custom:not(:first-child) .details {
     border-block-start: var(--style-border-width) solid var(--color-border);
   }
 
+  .accordion--dividers .details__header {
+    padding: 0;
+  }
+
   .accordion--dividers .details-content {
-    padding-block-end: var(--padding-sm);
+    padding-block-start: 20px;
+    /* padding-block-end: var(--padding-sm); */
   }
 
   .accordion--caret .icon-plus,
@@ -48,12 +61,21 @@
   /* because we can't pass apply a specific class on a block based on its parent block setting */
   .accordion .details__header {
     font-family: var(--summary-font-family);
-    font-style: var(--summary-font-style);
     font-weight: var(--summary-font-weight);
     font-size: var(--summary-font-size);
     line-height: var(--summary-font-line-height);
     text-transform: var(--summary-font-case);
-    min-height: var(--minimum-touch-target);
+    /* min-height: var(--minimum-touch-target); */
+    text-wrap: var(--summary-font-wrap);
+  }
+
+  @media screen and (max-width: 750px) {
+    .accordion .details__header {
+      font-size: var(--summary-mobile-font-size);
+    }
+    .accordion--dividers .details {
+      padding: var(--details-mobile-padding-top-bottom) 0;
+    }
   }
 {% endstylesheet %}
 
@@ -126,10 +148,401 @@
         {
           "value": "h6",
           "label": "t:options.h6"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "h6",
       "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "t:settings.font",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "t:options.heading"
+        },
+        {
+          "value": "var(--font-accent--family)",
+          "label": "t:options.accent"
+        }
+      ],
+      "default": "var(--font-body--family)",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "0.5rem",
+          "label": "8px"
+        },
+        {
+          "value": "0.5625rem",
+          "label": "9px"
+        },
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        },
+        {
+          "value": "1.25rem",
+          "label": "20px"
+        },
+        {
+          "value": "1.375rem",
+          "label": "22px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "24px"
+        },
+        {
+          "value": "1.625rem",
+          "label": "26px"
+        },
+        {
+          "value": "1.75rem",
+          "label": "28px"
+        },
+        {
+          "value": "1.875rem",
+          "label": "30px"
+        },
+        {
+          "value": "2rem",
+          "label": "32px"
+        },
+        {
+          "value": "2.125rem",
+          "label": "34px"
+        },
+        {
+          "value": "2.25rem",
+          "label": "36px"
+        },
+        {
+          "value": "2.375rem",
+          "label": "38px"
+        },
+        {
+          "value": "2.5rem",
+          "label": "40px"
+        },
+        {
+          "value": "2.625rem",
+          "label": "42px"
+        },
+        {
+          "value": "2.75rem",
+          "label": "44px"
+        },
+        {
+          "value": "2.875rem",
+          "label": "46px"
+        },
+        {
+          "value": "3rem",
+          "label": "48px"
+        },
+        {
+          "value": "3.125rem",
+          "label": "50px"
+        },
+        {
+          "value": "3.5rem",
+          "label": "56px"
+        },
+        {
+          "value": "3.75rem",
+          "label": "60px"
+        },
+        {
+          "value": "4rem",
+          "label": "64px"
+        },
+        {
+          "value": "4.5rem",
+          "label": "72px"
+        },
+        {
+          "value": "5.5rem",
+          "label": "88px"
+        },
+        {
+          "value": "7.5rem",
+          "label": "120px"
+        },
+        {
+          "value": "9.5rem",
+          "label": "152px"
+        },
+        {
+          "value": "11.5rem",
+          "label": "184px"
+        }
+      ],
+      "default": "1rem",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_font_size",
+      "label": "移动端尺寸",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "0.5rem",
+          "label": "8px"
+        },
+        {
+          "value": "0.5625rem",
+          "label": "9px"
+        },
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        },
+        {
+          "value": "1.25rem",
+          "label": "20px"
+        },
+        {
+          "value": "1.375rem",
+          "label": "22px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "24px"
+        },
+        {
+          "value": "1.625rem",
+          "label": "26px"
+        },
+        {
+          "value": "1.75rem",
+          "label": "28px"
+        },
+        {
+          "value": "1.875rem",
+          "label": "30px"
+        },
+        {
+          "value": "2rem",
+          "label": "32px"
+        },
+        {
+          "value": "2.125rem",
+          "label": "34px"
+        },
+        {
+          "value": "2.25rem",
+          "label": "36px"
+        },
+        {
+          "value": "2.375rem",
+          "label": "38px"
+        },
+        {
+          "value": "2.5rem",
+          "label": "40px"
+        },
+        {
+          "value": "2.625rem",
+          "label": "42px"
+        },
+        {
+          "value": "2.75rem",
+          "label": "44px"
+        },
+        {
+          "value": "2.875rem",
+          "label": "46px"
+        },
+        {
+          "value": "3rem",
+          "label": "48px"
+        },
+        {
+          "value": "3.125rem",
+          "label": "50px"
+        },
+        {
+          "value": "3.5rem",
+          "label": "56px"
+        },
+        {
+          "value": "3.75rem",
+          "label": "60px"
+        },
+        {
+          "value": "4rem",
+          "label": "64px"
+        },
+        {
+          "value": "4.5rem",
+          "label": "72px"
+        },
+        {
+          "value": "5.5rem",
+          "label": "88px"
+        },
+        {
+          "value": "7.5rem",
+          "label": "120px"
+        },
+        {
+          "value": "9.5rem",
+          "label": "152px"
+        },
+        {
+          "value": "11.5rem",
+          "label": "184px"
+        }
+      ],
+      "default": "1rem",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "line_height",
+      "label": "t:settings.line_height",
+      "options": [
+        {
+          "value": "tight",
+          "label": "t:options.tight"
+        },
+        {
+          "value": "normal",
+          "label": "t:options.normal"
+        },
+        {
+          "value": "loose",
+          "label": "t:options.loose"
+        }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "t:settings.wrap",
+      "options": [
+        {
+          "value": "pretty",
+          "label": "t:options.pretty"
+        },
+        {
+          "value": "balance",
+          "label": "t:options.balance"
+        },
+        {
+          "value": "wrap",
+          "label": "wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "t:options.none"
+        }
+      ],
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "pc_padding_top_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "电脑端行上下边距",
+      "default": 20,
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "移动端行上下边距",
+      "default": 20,
+    },
+    {
+      "type": "checkbox",
+      "id": "is_bold",
+      "label": "加粗",
+      "default": false
     },
     {
       "type": "checkbox",

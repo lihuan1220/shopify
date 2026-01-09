@@ -1,11 +1,4 @@
-
-
-<script
-  src="{{ 'blog-posts-list.js' | asset_url }}"
-  type="module"
-></script>
-
-<blog-posts-list section-id="{{ section.id }}">
+<div section-id="{{ section.id }}">
   <div class="section-background color-{{ section.settings.color_scheme }}"></div>
   <div
     class="
@@ -20,26 +13,145 @@
     {% content_for 'blocks' %}
 
     {%- paginate blog.articles by 12 -%}
-      <span ref="viewMorePrevious"></span>
       <div
-        ref="grid"
-        last-page="{{ paginate.pages }}"
         class="blog-posts-container"
       >
         {% for article in blog.articles %}
           <div
             class="blog-post-item"
-            ref="cards[]"
-            data-page="{{ paginate.current_page }}"
           >
             {% content_for 'block', id: 'static-blog-post-card', type: '_blog-post-card', article: article %}
           </div>
         {% endfor %}
       </div>
-      <span ref="viewMoreNext"></span>
+
+      <!-- 智能分页导航 -->
+      {% if paginate.pages > 1 %}
+        <div class="pagination">
+          <!-- 上一页 -->
+          {% if paginate.previous %}
+            <a href="{{ paginate.previous.url }}" class="pagination__item pagination__item--prev" aria-label="上一页">
+              &lt;
+            </a>
+          {% else %}
+            <span class="pagination__item pagination__item--disabled">&lt;</span>
+          {% endif %}
+
+          <!-- 首页 -->
+          {% if paginate.current_page == 1 %}
+            <span class="pagination__item pagination__item--current">1</span>
+          {% else %}
+            <a href="{{ paginate.path }}?page=1" class="pagination__item">1</a>
+          {% endif %}
+
+          <!-- 中间页码逻辑 -->
+          {% assign total_pages = paginate.pages %}
+          {% assign current_page = paginate.current_page %}
+
+          {% if total_pages <= 7 %}
+            <!-- 页数少于等于7，全部显示 -->
+            {% for i in (2..total_pages) %}
+              {% if i == current_page %}
+                <span class="pagination__item pagination__item--current">{{ i }}</span>
+              {% else %}
+                <a href="{{ paginate.path }}?page={{ i }}" class="pagination__item">{{ i }}</a>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <!-- 页数大于7，显示省略号和当前页左右各2个页码 -->
+            {% assign left_gap = 2 %}
+            {% assign right_gap = 2 %}
+            {% assign show_left_dots = false %}
+            {% assign show_right_dots = false %}
+
+            <!-- 如果当前页左边的页码数量超过了 left_gap，则显示左边省略号 -->
+            {% assign left_boundary = current_page | minus: left_gap %}
+            {% if left_boundary > 2 %}
+              {% assign show_left_dots = true %}
+            {% endif %}
+
+            <!-- 如果当前页右边的页码数量超过了 right_gap，则显示右边省略号 -->
+            {% assign right_boundary = current_page | plus: right_gap %}
+            {% assign total_minus_one = total_pages | minus: 1 %}
+            {% if right_boundary < total_minus_one %}
+              {% assign show_right_dots = true %}
+            {% endif %}
+
+             <!-- 左边省略号 -->
+            {% if show_left_dots %}
+              {% assign target_left_page = current_page | minus: 5 %}
+              {% if target_left_page < 1 %}
+                {% assign target_left_page = 1 %}
+              {% endif %}
+              <a href="{{ paginate.path }}?page={{ target_left_page }}" class="pagination__item pagination__item--dots-left"></a>
+            {% endif %}
+
+            <!-- 显示当前页左边的页码 -->
+            {% assign left_start = current_page | minus: left_gap %}
+            {% assign left_end = current_page | minus: 1 %}
+            {% comment %} 确保起始页码不小于 2 {% endcomment %}
+            {% if left_start < 2 %}
+              {% assign left_start = 2 %}
+            {% endif %}
+
+            {% for i in (left_start..left_end) %}
+              <a href="{{ paginate.path }}?page={{ i }}" class="pagination__item">{{ i }}</a>
+            {% endfor %}
+
+            <!-- 显示当前页 -->
+            {% if current_page != 1 and current_page != total_pages %}
+              <span class="pagination__item pagination__item--current">{{ current_page }}</span>
+            {% endif %}
+
+            <!-- 显示当前页右边的页码 -->
+            {% assign right_start = current_page | plus: 1 %}
+            {% assign right_end = current_page | plus: right_gap %}
+            {% comment %} 确保结束页码不大于 total_pages - 1 {% endcomment %}
+            {% if right_end > total_minus_one %}
+              {% assign right_end = total_minus_one %}
+            {% endif %}
+
+            {% for i in (right_start..right_end) %}
+              <a href="{{ paginate.path }}?page={{ i }}" class="pagination__item">{{ i }}</a>
+            {% endfor %}
+
+             <!-- 右边省略号 -->
+            {% if show_right_dots %}
+              {% assign target_right_page = current_page | plus: 5 %}
+              {% if target_right_page > total_pages %}
+                {% assign target_right_page = total_pages %}
+              {% endif %}
+              <a href="{{ paginate.path }}?page={{ target_right_page }}" class="pagination__item pagination__item--dots-right"></a>
+            {% endif %}
+
+            <!-- 显示末页 -->
+            {% if current_page == total_pages %}
+              <span class="pagination__item pagination__item--current">{{ total_pages }}</span>
+            {% else %}
+              <a href="{{ paginate.path }}?page={{ total_pages }}" class="pagination__item">{{ total_pages }}</a>
+            {% endif %}
+          {% endif %}
+
+          <!-- 下一页 -->
+          {% if paginate.next %}
+            <a href="{{ paginate.next.url }}" class="pagination__item pagination__item--next" aria-label="下一页">
+              &gt;
+            </a>
+          {% else %}
+            <span class="pagination__item pagination__item--disabled">&gt;</span>
+          {% endif %}
+
+          <!-- 前往第X页 -->
+          <div class="pagination__goto">
+            <span>Go to</span>
+            <input type="number" min="1" max="{{ total_pages }}" value="{{ current_page }}" autocomplete="off" class="pagination__goto-input" onblur="goToPageOnBlur(this, {{ current_page }})">
+          </div>
+        </div>
+      {% endif %}
+
     {%- endpaginate -%}
   </div>
-</blog-posts-list>
+</div>
 
 {% stylesheet %}
   /**
@@ -122,7 +234,155 @@
     border: none;
     padding: 0;
   }
+
+  /* ========== 分页样式 ========== */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3rem;
+    gap: 4px;
+  }
+
+  .pagination__item {
+    display: inline-block;
+    font-size: 16px;
+    min-width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    text-decoration: none;
+    color: #000000;
+    cursor: pointer;
+  }
+
+  .pagination__item:hover {
+    color: #47B92D;
+  }
+
+  .pagination__item--current {
+    color: #47B92D;
+  }
+
+  .pagination__item--disabled {
+    color: #c0c4cc;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  .pagination__item--dots-left::before {
+    content: "...";
+  }
+
+  .pagination__item--dots-left:hover::before {
+    content: '<';
+  }
+
+  .pagination__item--dots-right::before {
+    content: "...";
+  }
+
+  .pagination__item--dots-right:hover::before {
+    content: '>';
+  }
+
+  .pagination__item--prev,
+  .pagination__item--next {
+    font-size: 16px;
+  }
+
+
+  /* ========== 前往第X页样式 ========== */
+  .pagination__goto {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 1rem;
+    white-space: nowrap;
+    color: #606266;
+  }
+
+  .pagination__goto-input {
+    color: #606266;
+    background-color: #ffffff;
+    background-image: none;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: inherit;
+    height: 28px;
+    outline: none;
+    padding: 0 3px;
+    width: 50px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  /* 隐藏数字输入框的上下箭头 */
+  .pagination__goto-input::-webkit-outer-spin-button,
+  .pagination__goto-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .pagination__goto-input[type=number] {
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .pagination__goto-input:hover,
+  .pagination__goto-input:focus {
+    outline: none;
+    border-color: #47B92D;
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  @media (max-width: 768px) {
+    .pagination {
+      transform: scale(0.8);
+    }
+  }
 {% endstylesheet %}
+
+<script>
+  function goToPageOnBlur(input, currentPage) {
+    const page = parseInt(input.value);
+    const totalPages = parseInt(input.max);
+
+    // 检查输入是否为空
+    if (input.value === '') {
+      return;
+    }
+
+    // 检查是否是有效数字
+    if (isNaN(page)) {
+      input.value = '';
+      return;
+    }
+
+    // 检查是否在有效范围内
+    if (page < 1 || page > totalPages) {
+      input.value = '';
+      return;
+    }
+
+    // 检查是否与当前页相同
+    if (page === currentPage) {
+      return; // 不执行任何操作
+    }
+
+    // 构造目标页面的 URL
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', page);
+    url.hash = ''; // 清除锚点
+
+    // 跳转到指定页面
+    window.location.href = url.toString();
+  }
+</script>
 
 {% schema %}
 {

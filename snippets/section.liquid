@@ -6,7 +6,7 @@
 {%- enddoc -%}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<div
+<div id="{{ section.settings.navigation_id }}"
   class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} 
     {% if section.settings.device_hide %} device_hide {% endif %}
     {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}
@@ -94,7 +94,7 @@
   }
 
   .custom-section-content {
-    z-index: var(--layer-flat);
+    /* z-index: var(--layer-flat); */
   }
 
   /* Mobile */

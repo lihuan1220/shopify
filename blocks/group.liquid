@@ -170,6 +170,67 @@
       "default": 10
     },
     {
+      "type": "select",
+      "id": "position",
+      "label": "定位",
+      "options": [
+        {
+          "value": "relative",
+          "label": "relative"
+        },
+        {
+          "value": "absolute",
+          "label": "absolute"
+        },
+        {
+          "value": "fixed",
+          "label": "fixed"
+        }
+      ],
+      "default": "relative",
+    },
+    {
+      "type": "select",
+      "id": "position_unit",
+      "label": "定位单位",
+      "options": [
+        {
+          "value": "px",
+          "label": "px"
+        },
+        {
+          "value": "%",
+          "label": "%"
+        },
+      ],
+      "default": "px",
+      "visible_if": "{{ block.settings.position != 'relative' }}"
+    },
+    {
+      "type": "text",
+      "id": "position_top",
+      "label": "t:settings.top",
+      "visible_if": "{{ block.settings.position != 'relative' }}"
+    },
+    {
+      "type": "text",
+      "id": "position_bottom",
+      "label": "t:settings.bottom",
+      "visible_if": "{{ block.settings.position != 'relative' }}"
+    },
+    {
+      "type": "text",
+      "id": "position_left",
+      "label": "t:settings.left",
+      "visible_if": "{{ block.settings.position != 'relative' }}"
+    },
+    {
+      "type": "text",
+      "id": "position_right",
+      "label": "t:settings.right",
+      "visible_if": "{{ block.settings.position != 'relative' }}"
+    },
+    {
       "type": "header",
       "content": "t:content.size"
     },
@@ -392,7 +453,7 @@
       "id": "border_width",
       "min": 0,
       "max": 10,
-      "step": 0.5,
+      "step": 1,
       "unit": "px",
       "label": "t:settings.border_width",
       "default": 1,
@@ -418,6 +479,11 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "box_shadow",
+      "label": "阴影"
     },
     {
       "type": "checkbox",
@@ -586,6 +652,182 @@
       "label": "移动端隐藏",
       "default": false
     },
+    {
+      "type": "header",
+      "content": "功能"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_scroll",
+      "label": "滑动",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "is_scroll_pagination",
+      "label": "分页",
+      "default": false,
+      "visible_if": "{{ block.settings.is_scroll == true }}"
+    },
+    {
+      "type": "range",
+      "id": "pagination_padding_top",
+      "label": "分页点顶部",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ block.settings.is_scroll == true and block.settings.is_scroll_pagination == true }}"
+    },
+    {
+      "type": "select",
+      "id": "pagination_alignment",
+      "label": "分页点对齐方式",
+      "default": "center",
+      "options": [
+        { "value": "flex-start", "label": "左对齐" },
+        { "value": "center", "label": "居中对齐" },
+        { "value": "flex-end", "label": "右对齐" }
+      ],
+      "visible_if": "{{ block.settings.is_scroll == true and block.settings.is_scroll_pagination == true }}"
+    },
+    {
+      "type": "color",
+      "id": "pagination_dot_color",
+      "label": "分页点默认颜色",
+      "default": "#808080",
+      "visible_if": "{{ block.settings.is_scroll == true and block.settings.is_scroll_pagination == true }}"
+    },
+    {
+      "type": "color",
+      "id": "pagination_dot_active_color",
+      "label": "分页点激活颜色",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.is_scroll == true and block.settings.is_scroll_pagination == true }}"
+    },
+    {
+      "type": "range",
+      "id": "pagination_dot_width",
+      "label": "分页点宽度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ block.settings.is_scroll == true and block.settings.is_scroll_pagination == true }}"
+    },
+    {
+      "type": "range",
+      "id": "pagination_dot_height",
+      "label": "分页点高度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 2,
+      "visible_if": "{{ block.settings.is_scroll == true and block.settings.is_scroll_pagination == true }}"
+    },
+    {
+      "type": "range",
+      "id": "pagination_dot_radius",
+      "label": "分页点圆角",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.is_scroll == true and block.settings.is_scroll_pagination == true }}"
+    },
+    {
+      "type": "range",
+      "id": "pagination_dot_gap",
+      "label": "分页点间距",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ block.settings.is_scroll == true and block.settings.is_scroll_pagination == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_mouse_hover_opacity",
+      "label": "鼠标移入透明度",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_translation_animation",
+      "label": "无限平移动画",
+      "default": false,
+    },
+    {
+      "type": "header",
+      "content": "动画"
+    },
+    {
+      "type": "select",
+      "id": "group_animation_type",
+      "label": "进入动画类型",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "无动画"
+        },
+        {
+          "value": "group_fade_in",
+          "label": "淡入"
+        },
+        {
+          "value": "group_fade_in_up",
+          "label": "从上淡入"
+        },
+        {
+          "value": "group_fade_in_down",
+          "label": "从下淡入"
+        },
+        {
+          "value": "group_fade_in_left",
+          "label": "从左淡入"
+        },
+        {
+          "value": "group_fade_in_right",
+          "label": "从右淡入"
+        },
+        {
+          "value": "group_scale_in",
+          "label": "放大进入"
+        },
+        {
+          "value": "group_scale_in_smaller",
+          "label": "缩小进入"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "group_animation_duration",
+      "label": "动画持续时间",
+      "min": 0.5,
+      "max": 5,
+      "step": 0.1,
+      "unit": "秒",
+      "default": 1,
+      "visible_if": "{{ block.settings.group_animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "group_animation_delay",
+      "label": "动画延迟时间",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "unit": "秒",
+      "default": 0,
+      "visible_if": "{{ block.settings.group_animation_type != 'none' }}"
+    }
   ],
   "presets": [
     {

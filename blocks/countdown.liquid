@@ -1,0 +1,291 @@
+<div class="countdown-container" id="countdown-container">
+  <!-- 消息文本 -->
+  {% if block.settings.countdown_message != '' %}
+    <div class="countdown-message-content">
+      <img src="{{ block.settings.other_image_3 | img_url: 'master' }}" class="countdown-tree-image">
+      <span class="countdown-message" id="countdown-message">
+        {{ block.settings.countdown_message }}
+      </span>
+    </div>
+  {% endif %}
+  <!-- 背景图容器 -->
+  <div class="countdown-background">
+    <!-- 倒计时数字区域 -->
+    <div class="countdown-counters" style="background-image: url({{ block.settings.background_image | img_url: 'master' }});">
+      <div class="countdown-box" style="border-right: 1px solid #ffc286;">
+        <span class="countdown-number" id="countdown-days">00</span>
+        <span class="countdown-label">DAY</span>
+      </div>
+      <div class="countdown-box" style="border-right: 1px solid #ffc286;">
+        <span class="countdown-number" id="countdown-hours">00</span>
+        <span class="countdown-label">HOUR</span>
+      </div>
+      <div class="countdown-box" style="border-right: 1px solid #ffc286;">
+        <span class="countdown-number" id="countdown-minutes">00</span>
+        <span class="countdown-label">MIN</span>
+      </div>
+      <div class="countdown-box">
+        <span class="countdown-number" id="countdown-seconds">00</span>
+        <span class="countdown-label">SEC</span>
+      </div>
+    </div>
+    <!-- 左侧图片区域 -->
+    <div class="countdown-left-images">
+      <img src="{{ block.settings.other_image_2 | img_url: 'master' }}" class="countdown-gift-image">
+      <img src="{{ block.settings.other_image_1 | img_url: 'master' }}" class="countdown-santa-image">
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .countdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* 背景容器 */
+  .countdown-background {
+    display: flex;
+    position: relative;
+  }
+
+  /* 左侧图片区域 */
+  .countdown-left-images {
+    position: absolute;
+    top: 30%;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .countdown-santa-image,
+  .countdown-gift-image {
+    max-height: 80px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .countdown-santa-image {
+    position: relative;
+    left: -30px;
+    top: 6px;
+    transform-origin: right bottom;
+    animation: oscillate 2s ease-in-out infinite;
+  }
+
+  .countdown-gift-image {
+    position: relative;
+    left: 36px;
+  }
+  
+  @keyframes oscillate {
+    0% {
+        transform: rotate(-2deg);
+    }
+    50% {
+        transform: rotate(2deg);
+    }
+    100% {
+        transform: rotate(-2deg);
+    }
+}
+
+  /* 倒计时数字区域 */
+  .countdown-counters {
+    margin-left: 30px;
+    padding-top: 20px;
+    padding-left: 6px;
+    display: flex;
+    align-items: center;
+    background-size: cover;
+    width: 100%;
+    min-height: 86px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-radius: 6px;
+  }
+
+  .countdown-box {
+    text-align: center;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .countdown-number {
+    font-size: 28px;
+    font-weight: bold;
+    display: block;
+    color: #bd0000;
+    line-height: 1;
+  }
+
+  .countdown-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #9e7144;
+    display: block;
+    margin-top: 4px;
+  }
+
+  .countdown-message-content {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .countdown-tree-image {
+    width: 30px;
+    height: auto;
+  }
+
+  .countdown-message {
+    font-size: 16px;
+    color: #9e7144;
+    text-align: center;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+
+    .countdown-left-images {
+      transform: scale(0.7);
+      top: 22%;
+    }
+
+    .countdown-counters {
+      min-height: 66px;
+    }
+
+    .countdown-box {
+      width: 60px;
+    }
+
+    .countdown-number {
+      font-size: 20px;
+    }
+
+    .countdown-label {
+      font-size: 10px;
+    }
+
+    .countdown-message {
+      font-size: 14px;
+    }
+  }
+
+  /* 隐藏类 */
+  .countdown-hidden {
+    display: none !important;
+  }
+{% endstylesheet %}
+
+<script>
+  (function() {
+    // 从 Shopify 主题设置获取目标时间
+    const targetDateString = "{{ block.settings.countdown_target }}";
+
+    // 将字符串转换为日期对象（支持 "YYYY-MM-DD HH:MM:SS" 格式）
+    const targetDate = new Date(targetDateString.replace(' ', 'T')).getTime();
+
+    // 获取 DOM 元素
+    const containerElement = document.getElementById('countdown-container');
+    const daysElement = document.getElementById('countdown-days');
+    const hoursElement = document.getElementById('countdown-hours');
+    const minutesElement = document.getElementById('countdown-minutes');
+    const secondsElement = document.getElementById('countdown-seconds');
+    const messageElement = document.getElementById('countdown-message');
+
+    // 检查目标时间是否有效
+    if (isNaN(targetDate)) {
+      containerElement.classList.add('countdown-hidden');
+      return;
+    }
+
+    // 更新倒计时函数
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      // 如果倒计时结束
+      if (distance < 0) {
+        // 隐藏倒计时容器
+        containerElement.classList.add('countdown-hidden');
+
+        // 清除定时器
+        clearInterval(countdownInterval);
+        return;
+      }
+
+      // 计算天、小时、分钟、秒
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      // 更新显示（格式化为两位数）
+      daysElement.textContent = String(days).padStart(2, '0');
+      hoursElement.textContent = String(hours).padStart(2, '0');
+      minutesElement.textContent = String(minutes).padStart(2, '0');
+      secondsElement.textContent = String(seconds).padStart(2, '0');
+    }
+
+    // 立即更新一次
+    updateCountdown();
+
+    // 每秒更新一次
+    const countdownInterval = setInterval(updateCountdown, 1000);
+
+    // 可选：在页面卸载时清理定时器
+    window.addEventListener('beforeunload', function() {
+      clearInterval(countdownInterval);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "圣诞倒计时",
+  "settings": [
+    {
+      "type": "text",
+      "id": "countdown_target",
+      "label": "倒计时目标时间（格式：YYYY-MM-DD HH:MM:SS）"
+    },
+    {
+      "type": "text",
+      "id": "countdown_message",
+      "label": "倒计时文本"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "背景图片"
+    },
+    {
+      "type": "image_picker",
+      "id": "other_image_1",
+      "label": "圣诞老人图片"
+    },
+    {
+      "type": "image_picker",
+      "id": "other_image_2",
+      "label": "礼物图片"
+    },
+    {
+      "type": "image_picker",
+      "id": "other_image_3",
+      "label": "圣诞树图片"
+    }
+  ],
+  "presets": [
+    {
+      "name": "圣诞倒计时"
+    }
+  ]
+}
+{% endschema %}

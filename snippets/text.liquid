@@ -49,6 +49,12 @@
     if block.settings.custom_font_color
       echo ' font-color '
     endif
+    if block.settings.line_through
+      echo ' line_through '
+    endif
+    if block.settings.is_hide
+      echo ' hide '
+    endif
   endcapture
 %}
 
@@ -233,6 +239,15 @@
   .font-color>*,
   .text-block.font-color>* {
     color: var(--font-color);
+  }
+
+  .line_through {
+    text-decoration: line-through;
+    text-decoration-color: var(--font-color);
+  }
+
+  .hide {
+    display: none;
   }
 
   /* Mobile */

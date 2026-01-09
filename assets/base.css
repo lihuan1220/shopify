@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'MySenFont';
-  src: url(https://cdn.shopify.com/s/files/1/0922/8776/2505/files/Sen-Regular.ttf?v=1761126394) format('truetype');
+  src: url(https://cdn.shopify.com/s/files/1/0922/8776/2505/files/BeVietnamPro-Light.ttf?v=1765532519) format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -8,16 +8,14 @@
 
 @font-face {
   font-family: 'MySenFont';
-  src: url(https://cdn.shopify.com/s/files/1/0922/8776/2505/files/Sen-Bold.ttf?v=1761126394) format('truetype');
+  src: url(https://cdn.shopify.com/s/files/1/0922/8776/2505/files/BeVietnamPro-SemiBold.ttf?v=1765532519) format('truetype');
   font-weight: 700;
+  font-style: normal;
   font-display: swap;
 }
 
 * {
   box-sizing: border-box;
-}
-
-h1, h2, h3, h4, h5, h6, p {
   font-family: 'MySenFont', sans-serif !important;
 }
 
@@ -448,8 +446,8 @@ p:empty {
   grid-column: 1 / -1;
 
   @media screen and (min-width: 750px) {
-    padding-left: var(--page-margin);
-    padding-right: var(--page-margin);
+    padding-left: 30px;
+    padding-right: 30px;
   }
 }
 
@@ -2239,15 +2237,15 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
 
   .layout-panel-flex--row:not(.mobile-column) {
     .text-block {
-      flex: 1 1 var(--max-width--display-tight);
+      /* flex: 1 1 var(--max-width--display-tight); */
     }
 
     .image-block {
-      flex: 1 1 var(--size-style-width-mobile-min);
+      /* flex: 1 1 var(--size-style-width-mobile-min); */
     }
 
     .button {
-      flex: 0 0 fit-content;
+      /* flex: 0 0 fit-content; */
     }
   }
 }
@@ -3312,6 +3310,45 @@ slideshow-component:has(slideshow-controls[thumbnails]) {
   slideshow-controls[pagination-position='left'] {
     order: -1;
   }
+
+  /* 新增 */
+  @media screen and (max-width: 749px) {
+    &:has(slideshow-controls[pagination-position='left']) {
+      display: flex;
+      flex-direction: column;
+    }
+
+    slideshow-controls[pagination-position='left'][thumbnails] {
+      margin-top: 20px;
+      width: 100%;
+      height: auto;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      scrollbar-width: none;
+      min-height: var(--minimum-touch-target);
+      order: initial;
+
+      .slideshow-controls__thumbnails-container {
+        display: flex;
+        width: 100%;
+        max-height: 100%;
+        overflow-x: scroll;
+        scrollbar-width: none;
+      }
+
+      .slideshow-controls__thumbnails {
+        display: inline-flex;
+        flex-direction: row;
+        padding-inline: var(--slideshow-thumbnails-padding-inline, var(--padding-sm));
+        padding-block: var(--slideshow-thumbnails-padding-block, var(--padding-sm));
+        gap: var(--gap-xs);
+        margin-inline: auto;
+        height: fit-content;
+      }
+    }
+  }
 }
 
 slideshow-controls[thumbnails]:is([pagination-position='right'], [pagination-position='left']) {
@@ -4208,4 +4245,8 @@ text-component {
   .trustshop-image-review--wrap .trustshop-image-review--list .trustshop-media--item {
     margin-right: unset;
   }
+}
+
+.gravity-button {
+  background-color: #000000 !important;
 }

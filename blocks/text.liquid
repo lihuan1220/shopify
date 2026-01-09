@@ -344,6 +344,10 @@
           "label": "t:options.balance"
         },
         {
+          "value": "wrap",
+          "label": "wrap"
+        },
+        {
           "value": "nowrap",
           "label": "t:options.none"
         }
@@ -370,6 +374,18 @@
       ],
       "default": "var(--color-foreground)",
       "visible_if": "{{ block.settings.type_preset != 'rte' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "line_through",
+      "label": "删除线",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "is_hide",
+      "label": "隐藏",
+      "default": false
     },
     {
       "type": "header",

@@ -1,0 +1,91 @@
+/* 基础淡入 */
+.group_fade_in {
+  opacity: 0;
+  transition: opacity var(--animation-duration, 0.5s) ease-in-out;
+  transition-delay: var(--animation-delay, 0s);
+}
+
+/* 从上方淡入 */
+.group_fade_in_up {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity var(--animation-duration, 0.5s) ease-out, transform var(--animation-duration, 0.5s) ease-out;
+  transition-delay: var(--animation-delay, 0s);
+}
+
+/* 从下方淡入 */
+.group_fade_in_down {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--animation-duration, 0.5s) ease-out, transform var(--animation-duration, 0.5s) ease-out;
+  transition-delay: var(--animation-delay, 0s);
+}
+
+/* 从左方淡入 */
+.group_fade_in_left {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity var(--animation-duration, 0.5s) ease-out, transform var(--animation-duration, 0.5s) ease-out;
+  transition-delay: var(--animation-delay, 0s);
+}
+
+/* 从右方淡入 */
+.group_fade_in_right {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity var(--animation-duration, 0.5s) ease-out, transform var(--animation-duration, 0.5s) ease-out;
+  transition-delay: var(--animation-delay, 0s);
+}
+
+/* 放大进入 */
+.group_scale_in {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity var(--animation-duration, 0.5s) ease-out, transform var(--animation-duration, 0.5s) ease-out;
+  transition-delay: var(--animation-delay, 0s);
+}
+
+/* 缩小进入 */
+.group_scale_in_smaller {
+  opacity: 0;
+  transform: scale(1.1);
+  transition: opacity var(--animation-duration, 0.5s) ease-out, transform var(--animation-duration, 0.5s) ease-out;
+  transition-delay: var(--animation-delay, 0s);
+}
+
+/* 触发动画后的状态 */
+.group_fade_in.animate,
+.group_fade_in_up.animate,
+.group_fade_in_down.animate,
+.group_fade_in_left.animate,
+.group_fade_in_right.animate,
+.group_scale_in.animate,
+.group_scale_in_smaller.animate {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 特定动画的最终状态 */
+.group_fade_in_up.animate {
+  transform: translateY(0);
+}
+
+.group_fade_in_down.animate {
+  transform: translateY(0);
+}
+
+.group_fade_in_left.animate {
+  transform: translateX(0);
+}
+
+.group_fade_in_right.animate {
+  transform: translateX(0);
+}
+
+.group_scale_in.animate {
+  transform: scale(1);
+}
+
+.group_scale_in_smaller.animate {
+  transform: scale(1);
+}

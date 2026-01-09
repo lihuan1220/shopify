@@ -1,0 +1,13 @@
+position: {{ settings.position }};
+{% if settings.position_top != '' %}
+    top: {{ settings.position_top }}{{ settings.position_unit }};
+{% endif %}
+{% if settings.position_bottom != '' %}
+    bottom: {{ settings.position_bottom }}{{ settings.position_unit }};
+{% endif %}
+{% if settings.position_left != '' %}
+    left: {{ settings.position_left }}{{ settings.position_unit }};
+{% endif %}
+{% if settings.position_right != '' %}
+    right: {{ settings.position_right }}{{ settings.position_unit }};
+{% endif %}

@@ -159,7 +159,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 12
+      "default": 0
     },
     {
       "type": "header",
@@ -435,10 +435,25 @@
       "label": "移动端隐藏",
       "default": false
     },
+    {
+      "type": "header",
+      "content": "锚点导航"
+    },
+    {
+      "type": "text",
+      "id": "navigation_id",
+      "label": "锚点ID"
+    },
   ],
   "presets": [
     {
-      "name": "t:names.custom_section"
+      "name": "t:names.custom_section",
+      "blocks": {
+        "group": {
+          "type": "group"
+        }
+      },
+      "block_order": ["group"]
     },
     {
       "name": "t:names.faq_section",
@@ -759,14 +774,7 @@
               "type": "button",
               "name": "t:names.button",
               "settings": {
-                "label": "Discover the collection",
                 "link": "shopify://collections/all",
-                "open_in_new_tab": false,
-                "style_class": "link",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
-                "custom_width_mobile": 100
               }
             }
           },
@@ -792,9 +800,7 @@
         "button": {
           "type": "button",
           "settings": {
-            "label": "Shop now",
             "link": "shopify://collections/all",
-            "style_class": "link"
           }
         }
       },
@@ -1189,9 +1195,7 @@
             "button": {
               "type": "button",
               "settings": {
-                "label": "Shop now",
                 "link": "shopify://collections/all",
-                "style_class": "link"
               }
             }
           },
@@ -1232,9 +1236,7 @@
             "button": {
               "type": "button",
               "settings": {
-                "label": "Shop now",
                 "link": "shopify://collections/all",
-                "style_class": "link"
               }
             }
           },
@@ -1292,7 +1294,6 @@
             "button": {
               "type": "button",
               "settings": {
-                "label": "Shop now",
                 "link": "shopify://collections/all"
               }
             }
