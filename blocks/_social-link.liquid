@@ -10,6 +10,7 @@
 <div
   class="social-icons__icon-wrapper"
   {{ block.shopify_attributes }}
+  style="{% if block.settings.disable_jump %} pointer-events: none; {% endif %}"
 >
   <a
     href="{{ block.settings.link }}"
@@ -71,7 +72,13 @@
       "type": "url",
       "id": "link",
       "label": "t:settings.link"
-    }
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_jump",
+      "label": "禁用跳转",
+      "default": false
+    },
   ],
   "presets": [
     {

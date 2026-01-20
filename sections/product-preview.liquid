@@ -1,0 +1,308 @@
+{%- comment -%}
+  产品预览区块
+{%- endcomment -%}
+
+<div class="section section--page-width spacing-style product-preview-wrapper" style="{% render 'spacing-style', settings: section.settings %}">
+  <div class="product-preview-grid">
+    {%- for block in section.blocks -%}
+      {%- assign product = block.settings.product -%}
+      {%- if product != blank -%}
+        <div class="product-preview-item" data-product-handle="{{ product.handle }}">
+          <div class="product-preview-image">
+            <img src="{{ product.variants[0].image | img_url: '1000x' }}" 
+                 class="main-product-image"
+                 alt="{{ product.title }}">
+          </div>
+
+          <!-- 颜色选择器 -->
+          <div class="product-preview-color-swatches">
+            {%- for product_option in product.options_with_values -%}
+              {%- for i in (0..product.variants.size) -%}
+                {%- assign variant = product.variants[i] -%}
+                {%- if variant and variant.metafields.custom.color -%}
+                  <button 
+                    class="product-preview-color-swatch" 
+                    style="--data-color: {{ variant.metafields.custom.color }};"
+                    data-variant-index="{{ i }}"
+                    data-variant-id="{{ variant.id }}"
+                    data-image="{{ variant.image | img_url: '1000x' }}"
+                    aria-label="Select {{ variant.title }}">
+                  </button>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+          </div>
+
+          <div class="product-preview-info">
+            <span class="product-preview-price-title">{{- product.title | split: '-' | first | strip -}}</span>
+            <!-- 价格区域 -->
+            <div class="product-preview-price">
+              {%- if product.compare_at_price > product.price -%}
+                <span class="product-preview-price-discounted">{{ product.price | money_with_currency }}</span>
+                <span class="product-preview-price-compare">{{ product.compare_at_price | money_with_currency }}</span>
+              {%- else -%}
+                <span class="product-preview-price-default">{{ product.price | money_with_currency }}</span>
+              {%- endif -%}
+            </div>
+            <a href="{{ product.url }}" class="product-preview-select-options-button">Select Options</a>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+<style>
+  .product-preview-grid {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 20px;
+  }
+
+  .product-preview-item {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    padding-bottom: 40px;
+  }
+
+  .product-preview-image {
+    background: white;
+    overflow: hidden;
+  }
+
+  .product-preview-image img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .product-preview-image img:hover {
+    transform: scale(1.1);
+  }
+
+  .product-preview-color-swatches {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    height: 50px;
+  }
+
+  .product-preview-color-swatch {
+    width: 14px;
+    height: 14px;
+    border: none;
+    outline: none;
+    background-color: var(--data-color);
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .product-preview-color-swatch:hover::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--data-color);
+    border-radius: 50%;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  .product-preview-color-swatch.active::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--data-color);
+    border-radius: 50%;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  .product-preview-info {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+  }
+
+  .product-preview-price-title {
+    font-size: 20px;
+    color: #000000;
+  }
+
+  /* 价格样式 */
+  .product-preview-price {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .product-preview-price-discounted {
+    font-weight: bolder;
+    color: #F56C6C;
+  }
+
+  .product-preview-price-compare {
+    color: #909399;
+    text-decoration: line-through;
+  }
+
+  .product-preview-price-default {
+    font-weight: bold;
+    color: #000000;
+  }
+
+  .product-preview-select-options-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #000;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 12px;
+    min-width: auto;
+    width: auto;
+    transition: background 0.2s;
+    margin-top: 10px;
+  }
+
+  .product-preview-select-options-button:hover {
+    background: #333;
+  }
+
+  @media screen and (max-width: 750px) {
+    .product-preview-grid {
+      grid-auto-flow: row;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const productPreviewItems = document.querySelectorAll('.product-preview-item');
+
+    productPreviewItems.forEach(item => {
+      const imageEl = item.querySelector('.main-product-image');
+      const swatches = item.querySelectorAll('.product-preview-color-swatch');
+      let currentVariantId = 1; // 记录当前选中的变体 ID
+
+      // 初始化第一个圆点为 active，并设置默认变体 ID
+      if (swatches.length > 0) {
+        swatches[0].classList.add('active');
+        currentVariantId = swatches[0].getAttribute('data-variant-id');
+      }
+
+      // 圆点点击事件
+      swatches.forEach(swatch => {
+        swatch.addEventListener('click', function() {
+          // 移除其他 active 状态
+          swatches.forEach(s => s.classList.remove('active'));
+          this.classList.add('active');
+
+          // 获取数据
+          const newSrc = this.getAttribute('data-image');
+          currentVariantId = this.getAttribute('data-variant-id'); // 更新当前变体 ID
+
+          // 切换图片
+          imageEl.src = newSrc;
+
+          // 更新按钮链接
+          const productHandle = item.getAttribute('data-product-handle');
+          const selectButton = item.querySelector('.product-preview-select-options-button');
+          selectButton.href = `/products/${productHandle}?variant=${currentVariantId}`;
+        });
+      });
+
+      // 图片点击事件：跳转到当前选中变体
+      imageEl.addEventListener('click', function() {
+        if (currentVariantId) {
+          const productHandle = item.getAttribute('data-product-handle');
+          window.location.href = `/products/${productHandle}?variant=${currentVariantId}`;
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "产品预览",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+  ],
+  "blocks": [
+    {
+      "type": "product-item",
+      "name": "项",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:settings.product"
+        },
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "产品预览",
+      "category": "自定义"
+    }
+  ]
+}
+{% endschema %}

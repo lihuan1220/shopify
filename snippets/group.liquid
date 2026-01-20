@@ -30,6 +30,7 @@
     {% if settings.is_mouse_hover_opacity %} mouse-hover-opacity {% endif %}
      {% comment %} 组动画 {% endcomment %}
     {% if settings.group_animation_type != 'none' %} {{ settings.group_animation_type }} {% endif %}
+    {% if settings.width == 'pixel' %} width-px {% endif %}
   "
   style="
     {% render 'border-override', settings: settings %}
@@ -40,7 +41,6 @@
     {% if settings.custom_mobile_size %} --mobile-border-radius: {{ settings.modile_border_radius }}px; {% endif %}
     {% comment %} 滑动功能设置 {% endcomment %}
     {% if settings.is_scroll and settings.is_scroll_pagination %} padding-bottom: 20px; {% endif %}
-    {% if settings.width == 'pixel' %} width: {{ settings.width_px }}px; min-width: {{ settings.width_px }}px; {% endif %}
     {% comment %} 动画设置 {% endcomment %}
     {% if settings.group_animation_type != 'none' %}
       --animation-duration: {{ settings.group_animation_duration }}s;
@@ -225,6 +225,14 @@
   }
   .mouse-hover-opacity:hover {
     opacity: 0.7;
+  }
+
+  .width-px {
+    min-width: var(--size-style-width-mobile, var(--size-style-width));
+
+    @media screen and (min-width: 750px) {
+      min-width: var(--size-style-width);
+    }
   }
   
   /* PC */

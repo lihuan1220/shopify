@@ -1,16 +1,27 @@
-<div class="custom-swiper-container 
-    spacing-style
+<div class="custom-swiper-container spacing-style
     section section--{{ section.settings.section_width }} 
     {% if section.settings.no_select %} no-select {% endif %}
     {% if section.settings.device_hide %} device_hide {% endif %}
     {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}"
-    style="{% render 'spacing-style', settings: section.settings %}">
-  <div class="swiper custom-Swiper-{{ section.id }} border-style" style="{% render 'border-override', settings: section.settings %}">
+    style="{% render 'spacing-style', settings: section.settings %} ">
+
+  {%- if section.settings.first_fixed -%}
+    {%- for block in section.blocks limit: 1 -%}
+      <div style="padding-bottom: {{ section.settings.first_fixed_gap }}px;">{% render block %}</div>
+    {%- endfor -%}
+  {%- endif -%}
+
+  <div class="swiper custom-Swiper-{{ section.id }} border-style"
+    style="{% render 'border-override', settings: section.settings %}
+      padding-bottom: {{ section.settings.pagination_distance_from_bottom }}px;
+      {% if section.settings.background %} background-color: {{ section.settings.background_color }}; {% endif %}">
     <div class="swiper-wrapper">
-      {%- for block in section.blocks -%}
-        <div class="swiper-slide">
-          {% render block %}
-        </div>
+       {%- for block in section.blocks -%}
+        {%- unless section.settings.first_fixed and forloop.index0 == 0 -%}
+          <div class="swiper-slide" style="{% if section.settings.freemode %} flex-shrink: 1; {% endif %}">
+            {% render block %}
+          </div>
+        {%- endunless -%}
       {%- endfor -%}
     </div>
 
@@ -52,6 +63,7 @@
     background-position: center;
     background-size: cover;
     width: 100%;
+    height: 100%;
   }
 
   /* Swiper 自带元素的样式 */
@@ -94,7 +106,9 @@
     width: 20% !important;
     top: auto !important;
     left: auto !important;
-    bottom: 0 !important;
+    bottom: 10px !important;
+    border-radius: 10px;
+    overflow: hidden;
   }
 
   .swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
@@ -115,15 +129,23 @@
     // 为每个 section 实例创建唯一的 Swiper
     const swiperContainer = document.querySelector('.custom-Swiper-{{ section.id }}');
     if (swiperContainer) {
-      {% if section.settings.pagination_type == 'progressbar' %}
-        swiperContainer.style.paddingBottom = '40px';
-      {% endif %}
       new Swiper(swiperContainer, {
         // --- Swiper 配置选项 ---
         direction: 'horizontal', // 滑动方向
         effect: '{{ section.settings.effect }}', // 切换效果
         loop: {{ section.settings.loop }}, // 是否循环
         speed: 800, // 切换动画的持续时间（毫秒）
+        spaceBetween: {{ section.settings.space_between }},
+        breakpoints: {
+          // 当屏幕宽度小于等于 768px 时（移动端）
+          320: {
+            spaceBetween: {{ section.settings.mobile_space_between }}
+          },
+          // 当屏幕宽度大于 768px 时（桌面端）
+          749: {
+            spaceBetween: {{ section.settings.space_between }}
+          }
+        },
 
         // --- 自动播放 ---
         {% if section.settings.autoplay %}
@@ -153,8 +175,7 @@
         // --- 自由模式 ---
         freeMode: {{ section.settings.freemode }},  // 自由模式
         {% if section.settings.freemode %}
-          slidesPerView: {{ section.settings.slides_perView }},  // 每页幻灯片
-          spaceBetween: {{ section.settings.space_between }}, // 幻灯片间距
+          slidesPerView: "auto",  // 自动
         {% endif %}
 
       });
@@ -201,6 +222,24 @@
       "default": true
     },
     {
+      "type": "range",
+      "id": "space_between",
+      "label": "幻灯片间距",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+    },
+    {
+      "type": "range",
+      "id": "mobile_space_between",
+      "label": "移动端幻灯片间距",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+    },
+    {
       "type": "checkbox",
       "id": "autoplay",
       "label": "自动播放",
@@ -241,6 +280,17 @@
       "visible_if": "{{ section.settings.show_pagination == true }}"
     },
     {
+      "type": "range",
+      "id": "pagination_distance_from_bottom",
+      "label": "分页距离底部",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.show_pagination == true }}"
+    },
+    {
       "type": "checkbox",
       "id": "show_navigation",
       "label": "显示导航按钮 (左右箭头)",
@@ -253,30 +303,27 @@
       "default": false
     },
     {
-      "type": "range",
-      "id": "space_between",
-      "label": "幻灯片间距",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "default": 0,
-      "visible_if": "{{ section.settings.freemode == true }}"
-    },
-    {
-      "type": "range",
-      "id": "slides_perView",
-      "label": "每页幻灯片",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "default": 0,
-      "visible_if": "{{ section.settings.freemode == true }}"
-    },
-    {
       "type": "checkbox",
       "id": "no_select",
       "label": "内容禁止选择",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "first_fixed",
+      "label": "第一个组固定不动",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "first_fixed_gap",
+      "label": "间隔",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ section.settings.first_fixed == true }}"
     },
     {
       "type": "header",
@@ -307,6 +354,24 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "background",
+      "label": "t:settings.background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "alpha": true,
+      "default": "#000000",
+      "visible_if": "{{ section.settings.background }}"
     },
     {
       "type": "header",

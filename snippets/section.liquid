@@ -55,10 +55,12 @@
         layout-panel-flex--{{ section.settings.content_direction }}
         section-content-wrapper
         {% if section.settings.vertical_on_mobile %} mobile-column{% endif %}
+        mobile-gap
       "
       style="
         {% render 'layout-panel-style', settings: section.settings %}
         {% render 'spacing-style', settings: section.settings %}
+        --mobile-gap: {{ section.settings.mobile_gap }}px;
       "
       data-testid="section-content"
     >
@@ -101,6 +103,9 @@
   @media (max-width: 750px) {
     .mobile_device_hide {
       display: none;
+    }
+    .mobile-gap {
+      gap: var(--mobile-gap) !important;
     }
   }
   /* PC */

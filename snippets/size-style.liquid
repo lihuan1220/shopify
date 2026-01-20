@@ -13,8 +13,8 @@
   --size-style-width-mobile: 100%; --size-style-width-mobile-min: 5rem;
 {%- elsif settings.width_mobile == 'fit-content' -%}
   --size-style-width-mobile: {{ settings.width_mobile }}; --size-style-width-mobile-min: {{ settings.width_mobile }};
-{%- elsif settings.width == 'pixel' -%}
-  --size-style-width-mobile: {{ settings.width_px }}px;
+{%- elsif settings.width_mobile == 'pixel' -%}
+  --size-style-width-mobile: {{ settings.width_mobile_px }}px;
 {%- endif -%}
 
 {% comment %} pc端宽度 {% endcomment %}

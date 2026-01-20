@@ -3,78 +3,78 @@
   It displays a summary card and a full article modal.
 {%- endcomment -%}
 
-<div class="user-story-content">
-  <div class="user-story-card">
+<div class="user-stories-user-story-content">
+  <div class="user-stories-user-story-card">
     {%- comment -%} 主要图片 {%- endcomment -%}
-    <div class="story-main-image">
-        {{ block.settings.image_1 | img_url: '3840x' | img_tag: block.settings.image_1.alt, 'story-image' }}
-      <div class="story-right-image">
-          {{ block.settings.image_3 | img_url: '1920x' | img_tag: block.settings.image_3.alt, 'story-image' }}
+    <div class="user-stories-story-main-image">
+        {{ block.settings.image_1 | img_url: '3840x' | img_tag: block.settings.image_1.alt, 'user-stories-story-image' }}
+      <div class="user-stories-story-right-image">
+          {{ block.settings.image_3 | img_url: '1920x' | img_tag: block.settings.image_3.alt, 'user-stories-story-image' }}
       </div>
-      <div class="story-left-image">
-          {{ block.settings.image_2 | img_url: '1920x' | img_tag: block.settings.image_2.alt, 'story-image' }}
+      <div class="user-stories-story-left-image">
+          {{ block.settings.image_2 | img_url: '1920x' | img_tag: block.settings.image_2.alt, 'user-stories-story-image' }}
       </div>
     </div>
 
     {%- comment -%} 左右布局内容区 {%- endcomment -%}
-    <div class="story-content-wrapper">
+    <div class="user-stories-story-content-wrapper">
       {%- comment -%} 左侧：用户信息 {%- endcomment -%}
-      <div class="user-info-column">
-          <div class="user-header">
-              <div class="avatar">
-                  {{ block.settings.avatar | img_url: '100x' | img_tag: settings.avatar.alt, 'user-avatar' }}
+      <div class="user-stories-user-info-column">
+          <div class="user-stories-user-header">
+              <div class="user-stories-avatar">
+                  {{ block.settings.avatar | img_url: '100x' | img_tag: settings.avatar.alt, 'user-stories-user-avatar' }}
               </div>
 
-              <div class="user-name-title">
-                  <h3 class="user-name">Kirk D.</h3>
-                  <p class="user-title">Marketing Agency Director</p>
+              <div class="user-stories-user-name-title">
+                  <h3 class="user-stories-user-name">Kirk D.</h3>
+                  <p class="user-stories-user-title">Marketing Agency Director</p>
               </div>
           </div>
 
           {%- comment -%} 标签在下方 {%- endcomment -%}
-          <div class="tags">
-              <span class="tag">#MarketingStrategy</span>
-              <span class="tag">#MagSafe</span>
-              <span class="tag">#ClientFocus</span>
+          <div class="user-stories-tags">
+              <span class="user-stories-tag">#MarketingStrategy</span>
+              <span class="user-stories-tag">#MagSafe</span>
+              <span class="user-stories-tag">#ClientFocus</span>
           </div>
       </div>
 
       {%- comment -%} 右侧：引言、摘要和描述 {%- endcomment -%}
-      <div class="quote-and-summary-column">
+      <div class="user-stories-quote-and-summary-column">
         {%- comment -%} 主要引言 {%- endcomment -%}
-        <p class="quote">
+        <p class="user-stories-quote">
           "The device just sat there quietly, and I aligned everyone on next steps in half the usual time."
         </p>
 
         {%- comment -%} 引用的补充说明 {%- endcomment -%}
-        <p class="quote-subtext">
+        <p class="user-stories-quote-subtext">
           "I simply placed the recorder and kept my focus on the conversation. It almost disappeared into my workflow."
         </p>
 
         {%- comment -%} AI 摘要 {%- endcomment -%}
-        <div class="ai-summary">
-          <div class="summary-left">
-            <div class="article-icon">
-              {{ block.settings.article_icon | img_url: '100x' | img_tag: settings.article_icon.alt, 'article-icon-img' }}
+        <div class="user-stories-ai-summary">
+          <div class="user-stories-summary-left">
+            <div class="user-stories-article-icon">
+              {{ block.settings.article_icon | img_url: '100x' | img_tag: settings.article_icon.alt, 'user-stories-article-icon-img' }}
             </div>
           </div>
-          <div class="summary-right">
-            <p class="summary-title">UMEVO AI SUMMARY</p>
-            <p class="summary-text">
+          <div class="user-stories-summary-right">
+            <p class="user-stories-summary-title">UMEVO AI SUMMARY</p>
+            <p class="user-stories-summary-text">
               Kirk utilizes the <strong>Note Plus magnetic back</strong> to attach the recorder to his iPhone during client calls. The <strong>AI summarization</strong> allows him to focus on strategy instead of typing, generating instant action items and saving hours of manual follow-up work.
             </p>
           </div>
         </div>
 
         {%- comment -%} 简短描述 {%- endcomment -%}
-        <p class="short-description">
+        <p class="user-stories-short-description">
           I chose the UMEVO Note Plus because I was looking for something beyond just a voice recorder. In my role as a director of a digital marketing agency, every client call, brainstorming session and pitch meeting tends to generate a flood of details...
         </p>
 
         {%- comment -%} 阅读更多按钮 {%- endcomment -%}
-        <button class="read-more-btn" onclick="openStoryModal()">
+        <button class="user-stories-read-more-btn" onclick="openStoryModal()">
           Read Full Story
-          {{ block.settings.arrow_icon | img_url: '100x' | img_tag: settings.arrow_icon.alt, 'arrow-icon' }}
+          {{ block.settings.arrow_icon | img_url: '100x' | img_tag: settings.arrow_icon.alt, 'user-stories-arrow-icon' }}
         </button>
       </div>
     </div>
@@ -82,12 +82,12 @@
 </div>
 
 {%- comment -%} 全文模态框 (Modal) {%- endcomment -%}
-<div id="story-modal" class="modal">
-   <div class="modal-content-wrapper">
-    <span class="close" onclick="closeStoryModal()">&times;</span>
-    <div class="modal-content">
-      <p class="modal-title">Seamless Workflow: How Note Plus Transformed My Client Strategy</p>
-      <div class="modal-meta">
+<div id="story-modal" class="user-stories-modal">
+   <div class="user-stories-modal-content-wrapper">
+    <span class="user-stories-close" onclick="closeStoryModal()">&times;</span>
+    <div class="user-stories-modal-content">
+      <p class="user-stories-modal-title">Seamless Workflow: How Note Plus Transformed My Client Strategy</p>
+      <div class="user-stories-modal-meta">
         <span>By Kirk D.</span>
         <span>•</span>
         <span>Oct 24, 2025</span>
@@ -96,40 +96,40 @@
       </div>
 
       {%- comment -%} 模态框内的图片 {%- endcomment -%}
-      <div class="modal-images">
+      <div class="user-stories-modal-images">
         {%- comment -%} 顶部大图 {%- endcomment -%}
-        <div class="modal-image-item modal-image-large">
-          {{ block.settings.image_4 | img_url: '1920x' | img_tag: block.settings.image_4.alt, 'modal-image-large' }}
+        <div class="user-stories-modal-image-item user-stories-modal-image-large">
+          {{ block.settings.image_4 | img_url: '1920x' | img_tag: block.settings.image_4.alt, 'user-stories-modal-image-large' }}
         </div>
 
         {%- comment -%} 下方两张小图 {%- endcomment -%}
-        <div class="modal-images-row">
-          <div class="modal-image-item modal-image-small">
-            {{ block.settings.image_1 | img_url: '1920x' | img_tag: block.settings.image_1.alt, 'modal-image-small' }}
+        <div class="user-stories-modal-images-row">
+          <div class="user-stories-modal-image-item user-stories-modal-image-small">
+            {{ block.settings.image_1 | img_url: '1920x' | img_tag: block.settings.image_1.alt, 'user-stories-modal-image-small' }}
           </div>
-          <div class="modal-image-item modal-image-small">
-            {{ block.settings.image_3 | img_url: '1920x' | img_tag: block.settings.image_3.alt, 'modal-image-small' }}
+          <div class="user-stories-modal-image-item user-stories-modal-image-small">
+            {{ block.settings.image_3 | img_url: '1920x' | img_tag: block.settings.image_3.alt, 'user-stories-modal-image-small' }}
           </div>
         </div>
       </div>
 
       {%- comment -%} 模态框内的文章内容 {%- endcomment -%}
-      <div class="modal-body">
+      <div class="user-stories-modal-body">
         <h3>The Search for Order</h3>
-        <p>I chose the UMEVO Note Plus because I was looking for something beyond just a voice recorder. In my role as a director of a digital marketing agency, every client call, brainstorming session and pitch meeting tends to generate a flood of details. I wanted a tool that wouldn’t force me to constantly scribble notes or lose track of who said what.</p>
+        <p>I chose the UMEVO Note Plus because I was looking for something beyond just a voice recorder. In my role as a director of a digital marketing agency, every client call, brainstorming session and pitch meeting tends to generate a flood of details. I wanted a tool that wouldn't force me to constantly scribble notes or lose track of who said what.</p>
         <h3>Discreet Yet Powerful</h3>
         <p>When I discovered the Note Plus with its magnetic back (so it sticks to my iPhone) and its AI-powered transcription and summarisation features, it felt like the right fit. The specs-list looked solid.</p>
-        <p>Once it arrived, the real fun began. I snapped the magnetic case onto my iPhone, clipped the Note Plus to it, and it almost disappeared into my workflow: slim, discreet, no bulk. I’ve used it during client calls: instead of flipping between my phone and notebook, I hit record, let the device work at its speed, and later pulled the transcript and summary from the app. With 64GB storage and up to 40 hours continuous recording, I never worry about cutting short a longer session.</p>
+        <p>Once it arrived, the real fun began. I snapped the magnetic case onto my iPhone, clipped the Note Plus to it, and it almost disappeared into my workflow: slim, discreet, no bulk. I've used it during client calls: instead of flipping between my phone and notebook, I hit record, let the device work at its speed, and later pulled the transcript and summary from the app. With 64GB storage and up to 40 hours continuous recording, I never worry about cutting short a longer session.</p>
         <h3>The "Aha" Moment</h3>
-        <p>One moment stands out: I was on a strategy call with a new account where we covered brand positioning, audience segments, tone of voice and campaign milestones. Normally I’d be typing frantically. This time I simply placed the recorder and kept my focus on the conversation.</p>
+        <p>One moment stands out: I was on a strategy call with a new account where we covered brand positioning, audience segments, tone of voice and campaign milestones. Normally I'd be typing frantically. This time I simply placed the recorder and kept my focus on the conversation.</p>
         <h3>The Result</h3>
         <p>After the call I opened the app and within minutes I had a cleaned-up summary of the key actions and a full transcript. I sent the summary to the team, aligned everyone on next steps in half the usual time. The magnetic attachment to my iPhone made everything seamless, no separate gadget to fish out, no awkward setup. The device just sat there quietly.</p>
         <h4>Brilliant technology and highly recommended.</h4>
       </div>
 
-      <div class="call-to-action">
+      <div class="user-stories-call-to-action">
         <p>Want to experience this workflow?</p>
-        <a href="{{ block.settings.link }}" class="cta-button">Shop UMEVO Note Plus</a>
+        <a href="{{ block.settings.link }}" class="user-stories-cta-button">Shop UMEVO Note Plus</a>
       </div>
     </div>
   </div>
@@ -138,10 +138,10 @@
 {%- comment -%} CSS 样式 {%- endcomment -%}
 
 {% stylesheet %}
-  .user-story-content {
+  .user-stories-user-story-content {
     padding: 0 100px;
   }
-  .user-story-card {
+  .user-stories-user-story-card {
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -149,27 +149,27 @@
     width: 100%;
   }
 
-  .story-main-image {
+  .user-stories-story-main-image {
     position: relative;
     width: 100%;
     height: 500px;
   }
 
-  .story-main-image:hover .story-left-image {
+  .user-stories-story-main-image:hover .user-stories-story-left-image {
     transform: rotate(0deg);
   }
 
-  .story-main-image:hover .story-right-image {
+  .user-stories-story-main-image:hover .user-stories-story-right-image {
     transform: rotate(0deg);
   }
 
-  .story-main-image img {
+  .user-stories-story-main-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .story-left-image {
+  .user-stories-story-left-image {
     width: 192px;
     height: 128px;
     position: absolute;
@@ -182,13 +182,13 @@
     transition: transform 0.2s ease;
   }
 
-  .story-left-image img {
+  .user-stories-story-left-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .story-right-image {
+  .user-stories-story-right-image {
     width: 192px;
     height: 128px;
     position: absolute;
@@ -201,20 +201,20 @@
     transition: transform 0.2s ease;
   }
 
-  .story-right-image img {
+  .user-stories-story-right-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .story-content-wrapper {
+  .user-stories-story-content-wrapper {
     display: flex;
     padding: 40px;
     gap: 30px;
     margin-top: 40px;
   }
 
-  .user-info-column {
+  .user-stories-user-info-column {
     flex: 0 0 240px; /* 固定宽度，确保左侧列不会被挤压 */
     display: flex;
     flex-direction: column;
@@ -224,14 +224,14 @@
     padding-right: 20px;
   }
 
-  .user-header {
+  .user-stories-user-header {
     display: flex;
     align-items: center;
     gap: 10px;
     width: 100%;
   }
 
-  .avatar {
+  .user-stories-avatar {
     width: 64px;
     height: 64px;
     border-radius: 50%;
@@ -240,30 +240,30 @@
     border: 2px solid #47B92D44;
   }
 
-  .avatar img {
+  .user-stories-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .user-name {
+  .user-stories-user-name {
     font-size: 16px;
     margin: 0;
   }
 
-  .user-title {
+  .user-stories-user-title {
     font-size: 14px;
     color: #64748b;
     margin: 0;
   }
 
-  .tags {
+  .user-stories-tags {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
   }
 
-  .tag {
+  .user-stories-tag {
     background-color: #f1f5f9;
     padding: 4px 12px;
     border-radius: 20px;
@@ -271,20 +271,20 @@
     color: #475569;
   }
 
-  .quote-and-summary-column {
+  .user-stories-quote-and-summary-column {
     flex: 1; /* 让右侧区域占据剩余所有空间 */
     display: grid;
     gap: 20px;
   }
 
-  .quote {
+  .user-stories-quote {
     font-size: 24px;
     font-weight: 700;
     color: #1f2937;
     margin: 0;
   }
 
-  .quote-subtext {
+  .user-stories-quote-subtext {
     font-size: 16px;
     font-weight: 400;
     line-height: 1.5;
@@ -294,7 +294,7 @@
     margin: 0;
   }
 
-  .ai-summary {
+  .user-stories-ai-summary {
     display: flex;
     background-color: #f0fdf4;
     padding: 20px;
@@ -303,11 +303,11 @@
     gap: 16px;
   }
 
-  .summary-left {
+  .user-stories-summary-left {
     flex-shrink: 0;
   }
 
-  .article-icon {
+  .user-stories-article-icon {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -316,29 +316,29 @@
     background-color: #ffffff;
     border-radius: 50%;
   }
-  .article-icon-img {
+  .user-stories-article-icon-img {
     width: 18px;
     height: 16px;
   }
 
-  .summary-right {
+  .user-stories-summary-right {
     display: grid;
     gap: 10px;
   }
 
-  .summary-title {
+  .user-stories-summary-title {
     font-weight: 700;
     font-size: 14px;
     color: #47B92D;
     margin: 0;
   }
-  .summary-text {
+  .user-stories-summary-text {
     font-size: 14px;
     color: #334155;
     margin: 0;
   }
 
-  .short-description {
+  .user-stories-short-description {
     font-size: 16px;
     color: #475569;
     margin: 0;
@@ -347,7 +347,7 @@
   }
 
   /* 在文案底部添加向上渐隐的白色阴影 */
-  .short-description::after {
+  .user-stories-short-description::after {
     content: '';
     position: absolute;
     bottom: 0px; /* 从文案底部开始向上延伸 */
@@ -360,7 +360,7 @@
     z-index: 2;
   }
 
-  .read-more-btn {
+  .user-stories-read-more-btn {
     display: inline-flex;
     background: none;
     border: none;
@@ -371,15 +371,15 @@
     font-size: 16px;
   }
 
-  .read-more-btn:hover {
+  .user-stories-read-more-btn:hover {
     color: #47B92Ddd;
   }
 
-  .read-more-btn:hover .arrow-icon {
+  .user-stories-read-more-btn:hover .user-stories-arrow-icon {
     transform: translateX(4px);
   }
 
-  .arrow-icon {
+  .user-stories-arrow-icon {
     margin-left: 10px;
     width: 14px;
     height: auto;
@@ -388,10 +388,10 @@
   }
 
   /* Modal Styles */
-  .modal {
+  .user-stories-modal {
     display: none;
     position: fixed;
-    z-index: 50;
+    z-index: 1002;
     left: 0;
     top: 0;
     width: 100%;
@@ -401,7 +401,7 @@
     align-items: center;
   }
 
-  .modal-content-wrapper {
+  .user-stories-modal-content-wrapper {
     background: white;
     position: relative; /* 为关闭按钮提供定位上下文 */
     width: 100%;
@@ -413,7 +413,7 @@
     overflow: hidden;
   }
 
-  .modal-content {
+  .user-stories-modal-content {
     overflow-y: auto;
     padding: 40px;
     position: relative;
@@ -423,10 +423,10 @@
     gap: 10px;
   }
 
-  .close {
+  .user-stories-close {
     position: absolute;
-    top: 16px; /* 相对于 .modal-content-wrapper 定位 */
-    right: 16px; /* 相对于 .modal-content-wrapper 定位 */
+    top: 16px; /* 相对于 .user-stories-modal-content-wrapper 定位 */
+    right: 16px; /* 相对于 .user-stories-modal-content-wrapper 定位 */
     font-size: 28px;
     color: #aaa;
     cursor: pointer;
@@ -441,85 +441,85 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.1); /* 可选：添加阴影 */
   }
 
-  .close:hover {
+  .user-stories-close:hover {
     color: #777;
   }
 
-  .modal-title {
+  .user-stories-modal-title {
     font-size: 30px;
     font-weight: 700;
     margin: 0;
     color: #111827;
   }
 
-  .modal-meta {
+  .user-stories-modal-meta {
     color: #64748b;
     font-size: 14px;
     display: flex;
     gap: 10px;
   }
 
-  .modal-images {
+  .user-stories-modal-images {
     display: grid;
     gap: 20px;
     margin: 20px 0;
   }
 
-  .modal-image-large {
+  .user-stories-modal-image-large {
     width: 100%;
     overflow: hidden;
     border-radius: 10px;
   }
 
-  .modal-image-large img {
+  .user-stories-modal-image-large img {
     width: 100%;
     height: 256px;
     object-fit: cover;
     display: block;
   }
 
-  .modal-images-row {
+  .user-stories-modal-images-row {
     display: flex;
     gap: 20px;
   }
 
-  .modal-image-small {
+  .user-stories-modal-image-small {
     width: 100%;
     overflow: hidden;
     border-radius: 10px;
   }
 
-  .modal-image-small img {
+  .user-stories-modal-image-small img {
     width: 100%;
     height: 160px;
     object-fit: cover;
     display: block;
   }
 
-  .modal-body {
+  .user-stories-modal-body {
     display: grid;
     gap: 20px;
   }
 
-  .modal-body h3 {
+  .user-stories-modal-body h3 {
     font-size: 18px;
     font-weight: 600;
     margin: 0;
   }
 
-  .modal-body h4 {
+  .user-stories-modal-body h4 {
     font-size: 16px;
     font-weight: 600;
     margin: 0;
   }
 
-  .modal-body p {
+  .user-stories-modal-body p {
     font-size: 16px;
     color: #334155;
     margin: 0;
   }
 
-  .call-to-action {
+  .user-stories-call-to-action {
     border-top: 1px solid #f3f4f6;
     margin-top: 20px;
     padding-top: 20px;
@@ -529,13 +529,13 @@
     justify-content: center;
   }
 
-  .call-to-action p {
+  .user-stories-call-to-action p {
     font-size: 16px;
     color: #475569;
     margin: 0;
   }
 
-  .cta-button {
+  .user-stories-cta-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -547,34 +547,34 @@
     border-radius: 20px;
   }
 
-  .cta-button:hover {
+  .user-stories-cta-button:hover {
     background-color: #47B92D;
   }
 
   @media (max-width: 768px) {
-    .user-story-content {
+    .user-stories-user-story-content {
       padding: 0;
     }
-    .story-content-wrapper {
+    .user-stories-story-content-wrapper {
       padding: 20px;
     }
-    .story-main-image {
+    .user-stories-story-main-image {
       height: 400px;
     }
-    .story-content-wrapper {
+    .user-stories-story-content-wrapper {
       flex-direction: column;
     }
-    .user-info-column {
+    .user-stories-user-info-column {
       flex: 0;
       border-right: 0px;
     }
-    .modal-content-wrapper {
+    .user-stories-modal-content-wrapper {
       margin: 0 20px;
     }
-    .modal-content {
+    .user-stories-modal-content {
       padding: 20px;
     }
-    .close {
+    .user-stories-close {
       top: 2px;
       right: 2px;
     }
@@ -583,12 +583,10 @@
 
 {%- comment -%} JavaScript 功能 {%- endcomment -%}
 <script>
-  let scrollBarWidth = 0;
-
   function openStoryModal() {
     document.getElementById('story-modal').style.display = 'flex';
     // 计算滚动条宽度
-    scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
     // 设置 body 样式以隐藏滚动条并补偿宽度
     document.body.style.overflow = 'hidden';
     document.body.style.paddingRight = scrollBarWidth + 'px'; // 补偿滚动条宽度

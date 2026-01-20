@@ -1,0 +1,447 @@
+<div class="section section--page-width spacing-style community-videos-section" style="{% render 'spacing-style', settings: section.settings %}">
+  <!-- 移动端Swiper版本 -->
+  <div class="community-video-swiper swiper">
+    <div class="swiper-wrapper">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'video-item' -%}
+          <div class="swiper-slide community-video-card">
+            <div class="community-video-thumbnail" data-video-url="{{ block.settings.video_link }}" onclick="openVideoModal(this)">
+              {{ block.settings.cover_image | img_url: '720x' | img_tag: '', 'cover-image' }}
+              <div class="community-play-button">▶</div>
+            </div>
+
+            <div class="community-video-info">
+              <div class="community-avatar-and-title">
+                <img src="{{ block.settings.avatar_image | img_url: '100x' }}" alt="Avatar" class="community-avatar">
+                <h3 class="community-title">{{ block.settings.title_text }}</h3>
+              </div>
+              <p class="community-description">{{ block.settings.description_text }}</p>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    <!-- 分页器 -->
+    <div class="swiper-pagination"></div>
+  </div>
+
+  <!-- 桌面端网格版本 -->
+  <div class="community-video-grid">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'video-item' -%}
+        <div class="community-video-card">
+          <div class="community-video-thumbnail" data-video-url="{{ block.settings.video_link }}" onclick="openVideoModal(this)">
+            {{ block.settings.cover_image | img_url: '720x' | img_tag: '', 'cover-image' }}
+            <div class="community-play-button">▶</div>
+          </div>
+
+          <div class="community-video-info">
+            <div class="community-avatar-and-title">
+              <img src="{{ block.settings.avatar_image | img_url: '100x' }}" alt="Avatar" class="community-avatar">
+              <h3 class="community-title">{{ block.settings.title_text }}</h3>
+            </div>
+            <p class="community-description">{{ block.settings.description_text }}</p>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+<!-- 视频弹窗容器 -->
+<div id="community-video-modal" class="community-video-modal">
+  <div class="community-modal-content">
+    <span class="community-close-btn" onclick="closeVideoModal()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    </svg>
+    </span>
+    <div class="community-video-container">
+      <iframe id="community-video-iframe" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .community-video-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+  }
+
+  .community-video-thumbnail {
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden;
+  }
+
+  .community-video-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .community-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    z-index: 2;
+  }
+
+  .community-video-info {
+    padding-top: 20px;
+  }
+
+  .community-avatar-and-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .community-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+  }
+
+  .community-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #000000;
+  }
+
+  .community-description {
+    font-size: 16px;
+    color: #999999;
+  }
+
+  /* 弹窗样式 */
+  .community-video-modal {
+    display: none;
+    position: fixed;
+    z-index: 1002;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .community-modal-content {
+    position: relative;
+    max-width: 50%;
+    flex: 1;
+  }
+
+  .community-close-btn {
+    position: absolute;
+    top: -36px;
+    right: -36px;
+    background: #909399;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.2s;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 清除文本内容，只显示伪元素 */
+    text-align: center;
+  }
+
+  .community-close-btn::before,
+  .community-close-btn::after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 16px;
+      background-color: currentColor; /* 使用当前颜色属性 */
+      border-radius: 1px;
+  }
+
+  .community-close-btn::before {
+      transform: rotate(45deg);
+  }
+
+  .community-close-btn::after {
+      transform: rotate(-45deg);
+  }
+
+  .community-close-btn:hover {
+      color: rgba(255,255,255,1);
+  }
+
+  .community-video-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 */
+  }
+
+  .community-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* 移动端Swiper样式 */
+  .community-video-swiper {
+    width: 100%;
+    height: auto;
+    padding-bottom: 40px;
+    justify-content: center;
+  }
+
+  .community-video-swiper .swiper-slide {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .community-video-swiper .community-video-card {
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .swiper-pagination-bullet {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .swiper-pagination-bullet-active {
+    background-color: #47B92D;
+  }
+  
+  .swiper-pagination-progressbar {
+    width: 20% !important;
+    top: auto !important;
+    left: auto !important;
+    bottom: 10px !important;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* 媒体查询：移动端显示Swiper，隐藏Grid */
+  @media screen and (max-width: 749px) {
+    .community-video-grid {
+      grid-template-columns: 1fr;
+    }
+    .community-modal-content {
+      max-width: 80%;
+    }
+    .community-video-grid {
+      display: none;
+    }
+
+    .community-video-swiper {
+      display: flex;
+    }
+
+    .community-title {
+      font-size: 18px;
+    }
+    .community-description {
+      font-size: 14px;
+    }
+  }
+
+  /* 媒体查询：桌面端显示Grid，隐藏Swiper */
+  @media screen and (min-width: 750px) {
+    .community-video-swiper {
+      display: none;
+    }
+
+    .community-video-grid {
+      display: grid;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  function openVideoModal(element) {
+    const modal = document.getElementById('community-video-modal');
+    const iframe = document.getElementById('community-video-iframe');
+    let videoUrl;
+
+    // 处理来自Swiper或Grid的点击事件
+    if (element.dataset.videoUrl) {
+      videoUrl = element.dataset.videoUrl;
+    } else {
+      // 如果直接点击了子元素，向上查找
+      const parentThumbnail = element.closest('.community-video-thumbnail');
+      if (parentThumbnail && parentThumbnail.dataset.videoUrl) {
+        videoUrl = parentThumbnail.dataset.videoUrl;
+      }
+    }
+
+    // 设置 iframe 源
+    iframe.src = videoUrl;
+
+    // 显示弹窗
+    modal.style.display = 'flex';
+    
+    // 计算滚动条宽度
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.paddingRight = scrollBarWidth + 'px'; // 补偿滚动条宽度
+    
+    // 防止滚动背景
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeVideoModal() {
+    const modal = document.getElementById('community-video-modal');
+    const iframe = document.getElementById('community-video-iframe');
+
+    // 清空 iframe 避免继续播放
+    iframe.src = '';
+
+    // 隐藏弹窗
+    modal.style.display = 'none';
+
+    // 恢复滚动
+    document.body.style.overflow = 'auto';
+    document.body.style.paddingRight = '0'; // 移除补偿
+  }
+
+  // 点击遮罩层关闭弹窗
+  document.getElementById('community-video-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeVideoModal();
+    }
+  });
+
+  // 初始化移动端Swiper
+  document.addEventListener('DOMContentLoaded', function() {
+    const swiperElement = document.querySelector('.community-video-swiper');
+    if (swiperElement) {
+      new Swiper(swiperElement, {
+        direction: 'horizontal',
+        effect: 'slide',
+        loop: true,
+        speed: 800, // 切换动画的持续时间（毫秒）
+        spaceBetween: 10,
+        pagination: {
+          el: '.swiper-pagination',
+          type: 'progressbar',
+          clickable: true,
+        },
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "社区视频",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video-item",
+      "name": "项",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "cover_image",
+          "label": "封面"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar_image",
+          "label": "头像"
+        },
+        {
+          "type": "text",
+          "id": "title_text",
+          "label": "标题"
+        },
+        {
+          "type": "text",
+          "id": "description_text",
+          "label": "文本"
+        },
+        {
+          "type": "url",
+          "id": "video_link",
+          "label": "链接"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "社区视频",
+      "category": "自定义"
+    }
+  ]
+}
+{% endschema %}

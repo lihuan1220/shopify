@@ -2,13 +2,21 @@
 
 {%- if shop.features.follow_on_shop? -%}
   <div
-    class="spacing-style"
+    class="spacing-style follow-on-show"
     style="{% render 'spacing-padding', settings: block.settings %}"
     {{ block.shopify_attributes }}
   >
     {{ shop | login_button: action: 'follow' }}
   </div>
 {%- endif -%}
+
+{% stylesheet %}
+  @media screen and (max-width: 749px) {
+    .follow-on-show {
+      zoom: 0.8;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

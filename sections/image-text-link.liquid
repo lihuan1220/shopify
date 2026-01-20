@@ -3,11 +3,11 @@
 {%- endcomment -%}
 
 <!-- HTML 结构 -->
-<div class="image-text-link-{{ section.id }} section section--page-width 
+<div class="image-text-link-{{ section.id }} section section--page-width spacing-style
     {% if section.settings.device_hide %} device_hide {% endif %}
-    {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}">
-  <div class="feature-slider" style="{% if section.settings.is_reverse %} flex-direction: row-reverse; {% endif %}">
-    <div class="feature-slider-images" style="height: {{ section.settings.height_px }}px;
+    {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}" style="{% render 'spacing-style', settings: section.settings %}">
+  <div class="image-text-link-feature-slider" style="{% if section.settings.is_reverse %} flex-direction: row-reverse; {% endif %}">
+    <div class="image-text-link-feature-slider-images" style="height: {{ section.settings.height_px }}px;
       {% if section.settings.background_image %}
         background-image: url('{{ section.settings.background_image | img_url: "1024x" }}');
         background-size: cover;
@@ -16,23 +16,23 @@
       {% endif %}">
       {% for block in section.blocks %}
         {% if block.type == 'feature-item' %}
-          <div class="image-wrapper">
+          <div class="image-text-link-image-wrapper">
             <img src="{{ block.settings.image | img_url: '1024x' }}" alt="{{ block.settings.title }}"
-                 class="{% if section.settings.background_image %}with-bg-image{% endif %}">
+                 class="{% if section.settings.background_image %}image-text-link-with-bg-image{% endif %}">
           </div>
         {% endif %}
       {% endfor %}
     </div>
 
-    <div class="feature-slider-texts">
+    <div class="image-text-link-feature-slider-texts">
       {% for block in section.blocks %}
         {% if block.type == 'feature-item' %}
-          <div class="feature-text-item" data-index="{{ forloop.index0 }}">
-            <div class="countdown-progress">
-              <div class="countdown-bar"></div>
+          <div class="image-text-link-feature-text-item" data-index="{{ forloop.index0 }}">
+            <div class="image-text-link-countdown-progress">
+              <div class="image-text-link-countdown-bar"></div>
             </div>
-            <p class="title">{{ block.settings.title }}</p>
-            <p class="content">{{ block.settings.content }}</p>
+            <p class="image-text-link-title">{{ block.settings.title }}</p>
+            <p class="image-text-link-content">{{ block.settings.content }}</p>
           </div>
         {% endif %}
       {% endfor %}
@@ -41,14 +41,14 @@
 </div>
 
 {% stylesheet %}
-  .feature-slider {
+  .image-text-link-feature-slider {
     display: flex;
     gap: 100px;
     align-items: flex-start;
     height: 100%;
   }
 
-  .feature-slider-images {
+  .image-text-link-feature-slider-images {
     flex: 1;
     width: 100%;
     position: relative;
@@ -60,11 +60,11 @@
     scroll-behavior: smooth;
   }
 
-  .feature-slider-images::-webkit-scrollbar {
+  .image-text-link-feature-slider-images::-webkit-scrollbar {
     display: none;
   }
 
-  .image-wrapper {
+  .image-text-link-image-wrapper {
     height: 100%;
     width: 100%;
     position: relative;
@@ -75,14 +75,14 @@
     scroll-snap-align: start;
   }
 
-  .image-wrapper img {
+  .image-text-link-image-wrapper img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: contain;
   }
 
-  .image-wrapper img.with-bg-image {
+  .image-text-link-image-wrapper img.image-text-link-with-bg-image {
     /* 当有背景图片时，图片居中显示并占满90%空间 */
     width: 90%;
     height: 90%;
@@ -92,12 +92,12 @@
     transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out; /* 添加过渡效果 */
   }
 
-  .image-wrapper.visible img.with-bg-image {
+  .image-text-link-image-wrapper.image-text-link-visible img.image-text-link-with-bg-image {
     opacity: 1; /* 可见时透明度为1 */
     transform: scale(1); /* 回到正常位置 */
   }
 
-  .feature-slider-texts {
+  .image-text-link-feature-slider-texts {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -108,7 +108,7 @@
     position: relative; /* 关键：为 ::before 提供定位上下文 */
   }
 
-  .feature-text-item {
+  .image-text-link-feature-text-item {
     cursor: pointer;
     color: #999999;
     display: flex;
@@ -120,7 +120,7 @@
   }
 
   
-  .countdown-progress {
+  .image-text-link-countdown-progress {
     content: '';
     position: absolute;
     left: 0;
@@ -132,18 +132,18 @@
     overflow: hidden;
   }
 
-  .countdown-bar {
+  .image-text-link-countdown-bar {
     width: 100%;
     height: 0%;
     background: #4caf50;
     /* transition: height 5s linear; */
   }
 
-  .feature-text-item.active {
+  .image-text-link-feature-text-item.image-text-link-active {
     color: #000000;
   }
 
-  .feature-text-item .title {
+  .image-text-link-feature-text-item .image-text-link-title {
     font-size: 24px;
     margin-top: 0;
     margin-bottom: 10px;
@@ -152,7 +152,7 @@
     word-break: break-word;
   }
 
-  .feature-text-item .content {
+  .image-text-link-feature-text-item .image-text-link-content {
     font-size: 16px;
     margin: 0;
     white-space: nowrap;
@@ -160,7 +160,7 @@
     text-overflow: ellipsis;
     width: 100%;
   }
-  .feature-text-item.active .content {
+  .image-text-link-feature-text-item.image-text-link-active .image-text-link-content {
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
@@ -171,12 +171,12 @@
   document.addEventListener('DOMContentLoaded', function () {
     // 使用动态生成的类名来获取slider元素
     const sectionId = '{{ section.id }}';
-    const slider = document.querySelector('.image-text-link-' + sectionId + ' .feature-slider');
+    const slider = document.querySelector('.image-text-link-' + sectionId + ' .image-text-link-feature-slider');
     if (!slider) return;
 
-    const imageContainer = slider.querySelector('.feature-slider-images');
-    const textItems = Array.from(slider.querySelectorAll('.feature-text-item'));
-    const imageWrappers = Array.from(imageContainer.querySelectorAll('.image-wrapper'));
+    const imageContainer = slider.querySelector('.image-text-link-feature-slider-images');
+    const textItems = Array.from(slider.querySelectorAll('.image-text-link-feature-text-item'));
+    const imageWrappers = Array.from(imageContainer.querySelectorAll('.image-text-link-image-wrapper'));
     const images = Array.from(imageContainer.querySelectorAll('img'));
     // 获取动画时间设置（进度条时间，单位为秒）
     const countdownDuration = parseFloat('{{ section.settings.interval | default: "3" }}') * 1000;
@@ -191,7 +191,7 @@
 
     // 初始化时显示第一个图片
     if (imageWrappers.length > 0) {
-      imageWrappers[0].classList.add('visible');
+      imageWrappers[0].classList.add('image-text-link-visible');
     }
 
     function clearCurrentCountdown() {
@@ -204,7 +204,7 @@
     function resetCountdownHeight() {
       // 重置所有进度条
       textItems.forEach(item => {
-        const bar = item.querySelector('.countdown-bar');
+        const bar = item.querySelector('.image-text-link-countdown-bar');
         if (bar) {
           bar.style.transition = 'none';
           bar.style.height = '0%';
@@ -220,7 +220,7 @@
       resetCountdownHeight();
 
       // 为当前项启动倒计时
-      const currentBar = textItems[index].querySelector('.countdown-bar');
+      const currentBar = textItems[index].querySelector('.image-text-link-countdown-bar');
       if (currentBar) {
         currentBar.style.height = '100%';
 
@@ -253,14 +253,14 @@
 
       // 滚动完成后添加可见类
       setTimeout(() => {
-        imageWrappers.forEach(wrapper => wrapper.classList.remove('visible'));
-        targetWrapper.classList.add('visible');
+        imageWrappers.forEach(wrapper => wrapper.classList.remove('image-text-link-visible'));
+        targetWrapper.classList.add('image-text-link-visible');
       }, 300);
     }
 
     function updateActiveState(index) {
-      textItems.forEach((item) => item.classList.remove('active'));
-      textItems[index].classList.add('active');
+      textItems.forEach((item) => item.classList.remove('image-text-link-active'));
+      textItems[index].classList.add('image-text-link-active');
     }
 
     // 为每个文字项添加点击事件
@@ -313,8 +313,8 @@
         resetCountdown(activeIndex);
 
         // 显示当前可见的图片
-        imageWrappers.forEach(wrapper => wrapper.classList.remove('visible'));
-        imageWrappers[activeIndex].classList.add('visible');
+        imageWrappers.forEach(wrapper => wrapper.classList.remove('image-text-link-visible'));
+        imageWrappers[activeIndex].classList.add('image-text-link-visible');
       }, 150);
     });
 
@@ -352,6 +352,50 @@
       "id": "is_reverse",
       "label": "图文反转",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",

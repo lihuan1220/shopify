@@ -292,6 +292,10 @@
         {
           "value": "custom",
           "label": "t:options.custom"
+        },
+        {
+          "value": "pixel",
+          "label": "像素"
         }
       ],
       "default": "fill"
@@ -306,6 +310,13 @@
       "unit": "%",
       "default": 100,
       "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "text",
+      "id": "width_mobile_px",
+      "label": "像素(px)",
+      "default": "0",
+      "visible_if": "{{ block.settings.width_mobile == 'pixel' }}"
     },
     {
       "type": "select",

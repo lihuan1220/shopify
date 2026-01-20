@@ -3,17 +3,17 @@
 {%- endcomment -%}
 
 <!-- HTML 结构 -->
-<div class="button-image-display-{{ section.id }} section section--page-width 
+<div class="spacing-style button-image-display-{{ section.id }} section section--page-width 
     {% if section.settings.device_hide %} device_hide {% endif %}
-    {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}">
+    {% if section.settings.mobile_device_hide %} mobile_device_hide {% endif %}" style="{% render 'spacing-style', settings: section.settings %}">
 
   <!-- 按钮导航区 -->
-  <div class="button-nav-container">
+  <div class="button-image-display-button-nav-container">
     {% for block in section.blocks %}
       {% if block.type == 'image-item' %}
-        <div class="button-wrapper">
+        <div class="button-image-display-button-wrapper">
           <button 
-            class="nav-button {% if forloop.first %}active{% endif %}" 
+            class="button-image-display-nav-button {% if forloop.first %}active{% endif %}" 
             data-target="{{ block.id }}">
             {{ block.settings.title }}
           </button>
@@ -23,18 +23,18 @@
   </div>
 
   <!-- 内容展示区 -->
-  <div class="content-display-container" style="aspect-ratio: {{ section.settings.image_aspect_ratio }}">
+  <div class="button-image-display-content-display-container" style="aspect-ratio: {{ section.settings.image_aspect_ratio }}">
     {% for block in section.blocks %}
       {% if block.type == 'image-item' %}
         <div 
           id="{{ block.id }}" 
-          class="content-item {% if forloop.first %}active{% endif %}"
+          class="button-image-display-content-item {% if forloop.first %}active{% endif %}"
           style="display: {% if forloop.first %}block{% else %}none{% endif %};"
         >
             <img 
               src="{{ block.settings.image | img_url: '3840x' }}" 
               alt="{{ block.settings.title }}"
-              class="display-image"
+              class="button-image-display-display-image"
             />
         </div>
       {% endif %}
@@ -45,7 +45,7 @@
 
 {% stylesheet %}
 
-  .button-nav-container {
+  .button-image-display-button-nav-container {
     display: flex;
     width: 100%;
     background-color: #F9F9F9;
@@ -53,12 +53,12 @@
     border-radius: 5px;
   }
 
-  .button-wrapper {
+  .button-image-display-button-wrapper {
     flex: 1;
     text-align: center;
   }
 
-  .nav-button {
+  .button-image-display-nav-button {
     padding: 10px 20px;
     cursor: pointer;
     font-size: 24px;
@@ -67,26 +67,26 @@
     text-align: center;
   }
 
-  .nav-button.active,
-  .nav-button:hover {
+  .button-image-display-nav-button.active,
+  .button-image-display-nav-button:hover {
     color: #47B92D;
   }
 
-  .content-display-container {
+  .button-image-display-content-display-container {
     text-align: center;
   }
 
-  .display-image {
+  .button-image-display-display-image {
     width: 100%;
     height: auto;
   }
 
   @media screen and (max-width: 750px) {
-    .nav-button {
+    .button-image-display-nav-button {
         font-size: 14px;
         padding: 10px;
     }
-    .button-nav-container {
+    .button-image-display-button-nav-container {
         margin-bottom: 20px;
     }
   }
@@ -99,17 +99,27 @@
     const container = document.querySelector('.button-image-display-' + sectionId);
     if (!container) return;
 
-    const navButtons = container.querySelectorAll('.nav-button');
-    const contentItems = container.querySelectorAll('.content-item');
+    const navButtons = container.querySelectorAll('.button-image-display-nav-button');
+    const contentItems = container.querySelectorAll('.button-image-display-content-item');
 
     navButtons.forEach(button => {
+      // 点击事件 - 保留原有功能，设置为永久激活状态
       button.addEventListener('click', () => {
+        // 移除所有按钮的active状态，然后给当前按钮添加active
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+      });
+
+      // 鼠标经过事件 - 切换内容和高亮
+      button.addEventListener('mouseenter', () => {
         const targetId = button.getAttribute('data-target');
         
+        // 移除所有按钮的active状态，给当前按钮添加active
         navButtons.forEach(btn => btn.classList.remove('active'));
-        contentItems.forEach(item => item.style.display = 'none');
-        
         button.classList.add('active');
+        
+        // 显示对应的内容
+        contentItems.forEach(item => item.style.display = 'none');
         const targetItem = container.querySelector('#' + targetId);
         if (targetItem) targetItem.style.display = 'block';
       });
@@ -137,6 +147,50 @@
       "type": "text",
       "id": "image_aspect_ratio",
       "label": "图片宽高比"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
   ],
   "blocks": [

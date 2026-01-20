@@ -217,19 +217,47 @@
       High specificity selectors to subdue non-hovered links without javascript.
       If the need for js-generated `hovered` and `focused` classes arises for another reason we can simplify these.
     */
+  /* 常规和鼠标经过状态 */
   .menu-list:where(:has(.menu-list__list-item:hover)),
   .menu-list:where(:has(.menu-list__list-item:focus-within)),
   .menu-list:where(:has(.menu-list__list-item:not([aria-hidden='true']) .menu-list__link--active)) {
-    .menu-list__link {
-      color: rgb(from var(--menu-top-level-font-color) r g b / var(--opacity-subdued-text));
+    .menu-list__link,
+    .menu-list__arrow {
+      /* color: rgb(from var(--menu-top-level-font-color) r g b / var(--opacity-subdued-text)); */
+      color: #000000;
+    }
+
+    /* 下划线 */
+    .menu-list__link::after {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: linear-gradient(to right, #29f19c, #02a1f9);
+      transition: width 0.3s ease-in-out;
+    }
+
+    .menu-list__link:hover::after {
+      width: 100%;
     }
   }
 
   /* stylelint-disable-next-line selector-max-specificity */
+  /* 高亮颜色 */
   .menu-list:not(:has(.menu-list__list-item:hover)) .menu-list__link--active,
   .menu-list .menu-list__list-item:where(:hover, :focus-within) .menu-list__link,
   .menu-list .menu-list__list-item[slot='overflow'] .menu-list__link[aria-expanded='true'] {
-    color: var(--menu-top-level-font-color);
+    /* color: var(--menu-top-level-font-color); */
+    color: #000000;
+  }
+
+  /* 下划线 */
+  .menu-list:not(:has(.menu-list__list-item:hover)) .menu-list__link--active::after,
+  .menu-list .menu-list__list-item:where(:hover, :focus-within) .menu-list__link::after,
+  .menu-list .menu-list__list-item[slot='overflow'] .menu-list__link[aria-expanded='true']::after {
+      width: 100%;
   }
 
   .overflow-menu::part(list) {
@@ -299,21 +327,23 @@
     --submenu-content-opacity: 0;
     --submenu-content-animation: opacity calc(var(--submenu-animation-speed) * 0.75) var(--animation-easing);
 
-    box-shadow: var(--shadow-drawer);
     visibility: hidden;
     background-color: #fff;
     position: absolute;
-    border-radius: 0 0 20px 20px;
-    width: 300px;
+    overflow: hidden;
+    border-radius: 0 0 10px 10px;
+    flex-shrink: 0;
+    width: fit-content;
     left: -10px;
-    /* transform: translateX(-50%); */
     top: calc(100% + 6px);
     z-index: var(--layer-header-menu);
     padding-inline: var(--padding-inline);
-    clip-path: rect(0 100% var(--submenu-height) 0);
-    transition: clip-path var(--submenu-animation-speed) var(--ease-out-cubic);
-    box-shadow: 0px 5px 30px 0px rgba(0, 0, 0, .05);
-    /* border-top: 1px solid #e5e5e5 */
+    transform: scaleY(0);
+    transform-origin: top;
+    opacity: var(--submenu-content-opacity);
+    transition: transform var(--submenu-animation-speed) var(--ease-out-cubic),
+                opacity var(--submenu-animation-speed) var(--ease-out-cubic);
+    box-shadow: 0px 8px 12px 0px rgba(0, 0, 0, .1);
   }
 
   /* Show the submenus on hover */
@@ -323,6 +353,7 @@
   /* Keep the submenus open when they are hovered */
   .menu-list__submenu:is(:hover),
   .overflow-menu::part(overflow):hover {
+    transform: scaleY(1);
     visibility: visible;
     --submenu-content-opacity: 1;
   }
@@ -419,7 +450,7 @@
     font-style: var(--menu-child-font-style);
     font-weight: var(--menu-child-font-weight);
     /* font-size: var(--menu-child-font-size); */
-    font-size: 16px;
+    font-size: 14px;
     line-height: var(--menu-child-font-line-height);
     text-transform: var(--menu-child-font-case);
     /* var(--menu-child-font-color) */
@@ -427,7 +458,7 @@
     white-space: normal;
     text-decoration: none;
     display: inline-flex;
-    padding: var(--padding-2xs) 0;
+    padding: var(--padding-xs) 0;
     transition: color var(--animation-speed) var(--animation-easing);
 
     &:hover {
@@ -473,12 +504,12 @@
 
   .mega-menu__grid {
     display: grid;
-    grid-template-columns: repeat(var(--menu-columns-tablet), minmax(0, 1fr));
-    gap: var(--menu-vertical-gap) var(--menu-horizontal-gap);
+    /* grid-template-columns: repeat(var(--menu-columns-tablet), minmax(0, 1fr)); */
+    /* gap: var(--menu-vertical-gap) var(--menu-horizontal-gap); */
     width: 100%;
 
     @media screen and (min-width: 990px) {
-      grid-template-columns: repeat(var(--menu-columns-desktop), minmax(0, 1fr));
+      /* grid-template-columns: repeat(var(--menu-columns-desktop), minmax(0, 1fr)); */
     }
   }
 
@@ -549,7 +580,7 @@
     gap: var(--menu-vertical-gap) var(--menu-horizontal-gap);
 
     @media screen and (min-width: 990px) {
-      grid-column: span var(--menu-columns-desktop);
+      /* grid-column: span var(--menu-columns-desktop); */
     }
   }
 
